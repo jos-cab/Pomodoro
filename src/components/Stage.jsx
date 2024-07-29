@@ -3,7 +3,6 @@ import endStageSoundSource from "../public/end-stage.mp3";
 import "./Stage.css";
 
 const Root = document.getElementById("root");
-const StartBtn = document.getElementById("start-btn");
 
 function Stage({
 	getStageTime,
@@ -19,6 +18,8 @@ function Stage({
 	const [currentTime, setCurrentTime] = useState(getStageTime(currentStage));
 	const interval = useRef(null);
 	const endStageSound = new Audio(endStageSoundSource);
+
+	const StartBtn = useRef(null);
 
 	let displayHours = Math.floor(currentTime / 3600);
 	let displayMinutes = Math.floor(currentTime / 60) % 60;
@@ -42,10 +43,15 @@ function Stage({
 		return `rgb(${r}, ${g}, ${b})`;
 	};
 
+	useEffect(() => {
+		if (StartBtn.current) {
+			StartBtn.current.style.color = interpolateColor(
+				currentTime / getStageTime(currentStage)
+			);
+		}
+	});
+
 	Root.style.backgroundColor = interpolateColor(
-		currentTime / getStageTime(currentStage)
-	);
-	StartBtn.style.color = interpolateColor(
 		currentTime / getStageTime(currentStage)
 	);
 
@@ -118,8 +124,8 @@ function Stage({
 		<>
 			<h1 className="timer">{displayTime}</h1>
 			<button
-				id="start-btn"
 				className="start-btn"
+				ref={StartBtn}
 				onClick={() => setIsRunning(!isRunning)}>
 				{isRunning ? "Stop" : "Start"}
 			</button>
