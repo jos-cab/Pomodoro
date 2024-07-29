@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Stage from "./components/Stage";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [currentStage, setStage] = useState("Focus");
+	const [pomodoros, setPomodoros] = useState(0);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	console.log(pomodoros);
+
+	return (
+		<>
+			<h1>{currentStage}</h1>
+			<button onClick={() => setStage("Focus")}>Focus</button>
+			<button onClick={() => setStage("Break")}>Break</button>
+			<button onClick={() => setStage("Long break")}>Long break</button>
+			<Stage
+				time={getStageTime(currentStage)}
+				currentStage={currentStage}
+				setStage={setStage}
+				pomodoros={pomodoros}
+				setPomodoros={setPomodoros}
+			/>
+		</>
+	);
 }
 
-export default App
+const getStageTime = (stage) => {
+	switch (stage) {
+		case "Focus":
+			return 1500;
+		case "Break":
+			return 300;
+		case "Long break":
+			return 600;
+		default:
+			console.log("Unknown stage:", stage);
+			return 0;
+	}
+};
+
+export default App;
