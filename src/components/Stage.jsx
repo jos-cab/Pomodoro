@@ -1,19 +1,38 @@
 import React, { useState, useRef, useEffect } from "react";
+import endStageSoundSource from "../public/end-stage.mp3";
 
-export default function Stage({
-	time,
+function Stage({
+	getStageTime,
 	currentStage,
-	setStage,
+	setCurrentStage,
 	pomodoros,
 	setPomodoros,
+	autoStartFocus,
+	autoStartBreaks,
+	pomodorosUntilLongBreak,
 }) {
 	const [isRunning, setIsRunning] = useState(false);
-	const [currentTime, setCurrentTime] = useState(time);
+	const [currentTime, setCurrentTime] = useState(getStageTime(currentStage));
 	const interval = useRef(null);
+	const endStageSound = new Audio(endStageSoundSource);
+
+	let displayHours = Math.floor(currentTime / 3600);
+	let displayMinutes = Math.floor(currentTime / 60) % 60;
+	let displaySeconds = currentTime % 60;
+
+	if (displayHours < 10) displayHours = "0" + displayHours;
+	if (displayMinutes < 10) displayMinutes = "0" + displayMinutes;
+	if (displaySeconds < 10) displaySeconds = "0" + displaySeconds;
+
+	const displayTime =
+		displayHours + ":" + displayMinutes + ":" + displaySeconds;
 
 	useEffect(() => {
-		setCurrentTime(time);
-	}, [time]);
+		setCurrentTime(getStageTime(currentStage));
+		currentStage == "Focus"
+			? setTimeout(() => setIsRunning(autoStartFocus), 0)
+			: setTimeout(() => setIsRunning(autoStartBreaks), 0);
+	}, [currentStage]);
 
 	useEffect(() => {
 		if (isRunning) {
@@ -33,16 +52,19 @@ export default function Stage({
 		}
 
 		return () => clearInterval(interval.current);
-	}, [isRunning, time, currentStage]);
+	}, [isRunning]);
 
 	const handleStageTransition = () => {
+		endStageSound.play();
+
 		let nextStage;
+
 		switch (currentStage) {
 			case "Focus":
 				const newPomodoros = pomodoros + 1;
 				setTimeout(() => setPomodoros(newPomodoros), 0);
-				nextStage = newPomodoros % 3 == 0 ? "Long break" : "Break";
-
+				nextStage =
+					newPomodoros % pomodorosUntilLongBreak == 0 ? "Long break" : "Break";
 				break;
 			case "Break":
 				nextStage = "Focus";
@@ -51,20 +73,26 @@ export default function Stage({
 				nextStage = "Focus";
 				break;
 			default:
-				console.error("Unknown stage:", currentStage);
+				//console.error("Unknown stage:", currentStage);
 				return;
 		}
 
-		// Ensure state update happens outside of the render phase
-		setTimeout(() => setStage(nextStage), 0);
+		nextStage == "Focus"
+			? setTimeout(() => setIsRunning(autoStartFocus), 0)
+			: setTimeout(() => setIsRunning(autoStartBreaks), 0);
+
+		setTimeout(() => setCurrentStage(nextStage), 0);
+		setTimeout(() => setCurrentTime(getStageTime(nextStage)), 0);
 	};
 
 	return (
 		<>
-			<h1>{currentTime}</h1>
+			<h1>{displayTime}</h1>
 			<button onClick={() => setIsRunning(!isRunning)}>
 				{isRunning ? "Stop" : "Start"}
 			</button>
 		</>
 	);
 }
+
+export default Stage;
