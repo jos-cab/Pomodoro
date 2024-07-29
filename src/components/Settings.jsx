@@ -41,6 +41,15 @@ function Settings({
 	const handleClick = (event) => {
 		event.preventDefault(); // Prevent form submission
 
+		if (formData.focusTime < 1 || formData.focusTime > 86400) return;
+		if (formData.breakTime < 1 || formData.breakTime > 86400) return;
+		if (formData.longBreakTime < 1 || formData.longBreakTime > 86400) return;
+		if (
+			formData.pomodorosUntilLongBreak < 1 ||
+			formData.pomodorosUntilLongBreak > 86400
+		)
+			return;
+
 		// Update the parent state with the new values
 		setFocusTime(formData.focusTime);
 		setBreakTime(formData.breakTime);
@@ -75,6 +84,8 @@ function Settings({
 		<div className="input-field" key={field}>
 			<label htmlFor={field}>{transformCamelCase(field)}</label>
 			<input
+				min={1}
+				max={86400}
 				type="number"
 				name={field}
 				id={field}
