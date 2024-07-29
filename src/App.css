@@ -46,8 +46,14 @@ main {
 
 .settings-btn {
 	position: absolute;
-	transform: translate(calc(250px + 50%), -50%);
+	transform: translate(calc(250px + 50%), -25%);
 	width: 2em;
 	height: 2em;
 	cursor: pointer;
+	border: 0;
+	background-color: transparent;
+}
+
+.settings-btn img {
+	transform: translate(-25%, -25%) scale(0.75);
 }

@@ -15,8 +15,8 @@ function Settings({
 	setAutoStartBreaks,
 	setPomodorosUntilLongBreak,
 	currentStage,
-	setCurrentStage,
 	setShowSettings,
+	updateStage,
 }) {
 	// Create local state for the form inputs
 	const [formData, setFormData] = useState({
@@ -48,8 +48,7 @@ function Settings({
 		setAutoStartFocus(formData.autoStartFocus);
 		setAutoStartBreaks(formData.autoStartBreaks);
 		setPomodorosUntilLongBreak(formData.pomodorosUntilLongBreak);
-		setTimeout(() => setCurrentStage(null), 0);
-		setTimeout(() => setCurrentStage(currentStage), 1);
+		updateStage(currentStage);
 		setShowSettings(false);
 	};
 

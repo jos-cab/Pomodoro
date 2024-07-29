@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import endStageSoundSource from "../public/end-stage.mp3";
 import "./Stage.css";
 
+const Root = document.getElementById("root");
+const StartBtn = document.getElementById("start-btn");
+
 function Stage({
 	getStageTime,
 	currentStage,
@@ -28,11 +31,35 @@ function Stage({
 	const displayTime =
 		displayHours + ":" + displayMinutes + ":" + displaySeconds;
 
+	const [startColor, setStartColor] = useState({ r: 50, g: 150, b: 200 });
+	const [endColor, setEndColor] = useState({ r: 225, g: 75, b: 75 });
+
+	const interpolateColor = (progress) => {
+		// Calculate the interpolated color values
+		const r = Math.floor(startColor.r + progress * (endColor.r - startColor.r));
+		const g = Math.floor(startColor.g + progress * (endColor.g - startColor.g));
+		const b = Math.floor(startColor.b + progress * (endColor.b - startColor.b));
+		return `rgb(${r}, ${g}, ${b})`;
+	};
+
+	Root.style.backgroundColor = interpolateColor(
+		currentTime / getStageTime(currentStage)
+	);
+	StartBtn.style.color = interpolateColor(
+		currentTime / getStageTime(currentStage)
+	);
+
 	useEffect(() => {
 		setCurrentTime(getStageTime(currentStage));
-		currentStage == "Focus"
-			? setTimeout(() => setIsRunning(autoStartFocus), 0)
-			: setTimeout(() => setIsRunning(autoStartBreaks), 0);
+		if (currentStage == "Focus") {
+			setTimeout(() => setIsRunning(autoStartFocus), 0);
+			setStartColor({ r: 50, g: 150, b: 200 });
+			setEndColor({ r: 225, g: 75, b: 75 });
+		} else {
+			setTimeout(() => setIsRunning(autoStartBreaks), 0);
+			setStartColor({ r: 225, g: 75, b: 75 });
+			setEndColor({ r: 50, g: 150, b: 200 });
+		}
 	}, [currentStage]);
 
 	useEffect(() => {
@@ -45,6 +72,7 @@ function Stage({
 						handleStageTransition();
 						return 0;
 					}
+
 					return prevTime - 1;
 				});
 			}, 1000);
@@ -89,7 +117,10 @@ function Stage({
 	return (
 		<>
 			<h1 className="timer">{displayTime}</h1>
-			<button className="start-btn" onClick={() => setIsRunning(!isRunning)}>
+			<button
+				id="start-btn"
+				className="start-btn"
+				onClick={() => setIsRunning(!isRunning)}>
 				{isRunning ? "Stop" : "Start"}
 			</button>
 		</>

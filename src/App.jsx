@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Stage from "./components/Stage";
 import Settings from "./components/Settings";
+import settingsIcon from "./public/settings.svg";
 import "./App.css";
 
 function App() {
@@ -30,22 +31,27 @@ function App() {
 		}
 	};
 
+	const updateStage = (stage) => {
+		setTimeout(() => setCurrentStage(null), 0);
+		setTimeout(() => setCurrentStage(stage), 1);
+	};
+
 	return (
 		<main>
 			<button
 				className="settings-btn"
 				onClick={() => setShowSettings(!showSettings)}>
-				<img src="./settings.svg" alt="Settings" />
+				<img src={settingsIcon} alt="Settings" />
 			</button>
 			<h1 className="title page-title">{currentStage}</h1>
 			<div className="stage-container">
-				<button className="stage" onClick={() => setCurrentStage("Focus")}>
+				<button className="stage" onClick={() => updateStage("Focus")}>
 					Focus
 				</button>
-				<button className="stage" onClick={() => setCurrentStage("Break")}>
+				<button className="stage" onClick={() => updateStage("Break")}>
 					Break
 				</button>
-				<button className="stage" onClick={() => setCurrentStage("Long break")}>
+				<button className="stage" onClick={() => updateStage("Long break")}>
 					Long break
 				</button>
 			</div>
@@ -76,8 +82,8 @@ function App() {
 					setAutoStartBreaks={setAutoStartBreaks}
 					setPomodorosUntilLongBreak={setPomodorosUntilLongBreak}
 					currentStage={currentStage}
-					setCurrentStage={setCurrentStage}
 					setShowSettings={setShowSettings}
+					updateStage={updateStage}
 				/>
 			)}
 		</main>

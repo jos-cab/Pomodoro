@@ -3,6 +3,7 @@
 	font-weight: bold;
 	font-size: 3em;
 	user-select: none;
+	width: 270px;
 }
 
 .start-btn {
@@ -11,7 +12,6 @@
 	font-weight: bold;
 	padding: 0.5em;
 	text-transform: uppercase;
-	color: rgb(244, 118, 118);
 	background-color: #fff;
 	border: 0;
 	position: relative;
@@ -19,4 +19,5 @@
 	left: 50%;
 	transform: translateX(-50%);
 	cursor: pointer;
+	filter: brightness(110%);
 }
