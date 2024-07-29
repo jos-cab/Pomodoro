@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import endStageSoundSource from "../public/end-stage.mp3";
+import "./Stage.css";
 
 function Stage({
 	getStageTime,
@@ -87,8 +88,8 @@ function Stage({
 
 	return (
 		<>
-			<h1>{displayTime}</h1>
-			<button onClick={() => setIsRunning(!isRunning)}>
+			<h1 className="timer">{displayTime}</h1>
+			<button className="start-btn" onClick={() => setIsRunning(!isRunning)}>
 				{isRunning ? "Stop" : "Start"}
 			</button>
 		</>

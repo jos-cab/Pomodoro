@@ -1,0 +1,22 @@
+.timer {
+	color: #fff;
+	font-weight: bold;
+	font-size: 3em;
+	user-select: none;
+}
+
+.start-btn {
+	width: 75%;
+	font-size: 1.5em;
+	font-weight: bold;
+	padding: 0.5em;
+	text-transform: uppercase;
+	color: rgb(244, 118, 118);
+	background-color: #fff;
+	border: 0;
+	position: relative;
+	border-radius: 5px;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: pointer;
+}

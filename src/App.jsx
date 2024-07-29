@@ -6,6 +6,7 @@ import "./App.css";
 function App() {
 	const [currentStage, setCurrentStage] = useState("Focus");
 	const [pomodoros, setPomodoros] = useState(0);
+	const [showSettings, setShowSettings] = useState(false);
 
 	/*settings*/
 	const [focusTime, setFocusTime] = useState(1500);
@@ -30,11 +31,24 @@ function App() {
 	};
 
 	return (
-		<>
-			<h1>{currentStage}</h1>
-			<button onClick={() => setCurrentStage("Focus")}>Focus</button>
-			<button onClick={() => setCurrentStage("Break")}>Break</button>
-			<button onClick={() => setCurrentStage("Long break")}>Long break</button>
+		<main>
+			<button
+				className="settings-btn"
+				onClick={() => setShowSettings(!showSettings)}>
+				<img src="./settings.svg" alt="Settings" />
+			</button>
+			<h1 className="title page-title">{currentStage}</h1>
+			<div className="stage-container">
+				<button className="stage" onClick={() => setCurrentStage("Focus")}>
+					Focus
+				</button>
+				<button className="stage" onClick={() => setCurrentStage("Break")}>
+					Break
+				</button>
+				<button className="stage" onClick={() => setCurrentStage("Long break")}>
+					Long break
+				</button>
+			</div>
 
 			<Stage
 				getStageTime={getStageTime}
@@ -47,23 +61,26 @@ function App() {
 				pomodorosUntilLongBreak={pomodorosUntilLongBreak}
 			/>
 
-			<Settings
-				focusTime={focusTime}
-				breakTime={breakTime}
-				longBreakTime={longBreakTime}
-				autoStartFocus={autoStartFocus}
-				autoStartBreaks={autoStartBreaks}
-				pomodorosUntilLongBreak={pomodorosUntilLongBreak}
-				setFocusTime={setFocusTime}
-				setBreakTime={setBreakTime}
-				setLongBreakTime={setLongBreakTime}
-				setAutoStartFocus={setAutoStartFocus}
-				setAutoStartBreaks={setAutoStartBreaks}
-				setPomodorosUntilLongBreak={setPomodorosUntilLongBreak}
-				currentStage={currentStage}
-				setCurrentStage={setCurrentStage}
-			/>
-		</>
+			{showSettings && (
+				<Settings
+					focusTime={focusTime}
+					breakTime={breakTime}
+					longBreakTime={longBreakTime}
+					autoStartFocus={autoStartFocus}
+					autoStartBreaks={autoStartBreaks}
+					pomodorosUntilLongBreak={pomodorosUntilLongBreak}
+					setFocusTime={setFocusTime}
+					setBreakTime={setBreakTime}
+					setLongBreakTime={setLongBreakTime}
+					setAutoStartFocus={setAutoStartFocus}
+					setAutoStartBreaks={setAutoStartBreaks}
+					setPomodorosUntilLongBreak={setPomodorosUntilLongBreak}
+					currentStage={currentStage}
+					setCurrentStage={setCurrentStage}
+					setShowSettings={setShowSettings}
+				/>
+			)}
+		</main>
 	);
 }
 

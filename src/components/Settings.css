@@ -1,0 +1,50 @@
+.settings-background {
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+#settings {
+	background-color: rgb(231, 230, 230);
+	position: absolute;
+	width: 350px;
+	height: 350px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 10px;
+	padding: 1em 0.5em;
+}
+
+.settings-title {
+	font-size: 1.5em;
+	margin-bottom: 0.25em;
+}
+
+.save-settings {
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #fff;
+	width: 50%;
+	font-size: 1em;
+	border: 0;
+	border-radius: 999px;
+	padding: 0.25em 0.5em;
+	position: absolute;
+	bottom: 1em;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: pointer;
+}
+
+input[type="number"] {
+	width: 5em;
+}
+
+.input-field {
+	display: flex;
+	justify-content: space-between;
+	margin: 0.25em 0;
+}

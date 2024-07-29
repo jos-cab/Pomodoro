@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+AR:wght@100..400&family=Roboto&display=swap");
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+:root {
+	font-family: "Playwrite AR", cursive;
+}
+
+main {
+	background-color: rgba(255, 255, 255, 0.1);
+	max-width: 90%;
+	border-radius: 10px;
+	padding: 25px;
+}
+
+.stage-container {
+	display: flex;
+	justify-content: space-between;
+}
+
+.title {
+	text-align: center;
+	user-select: none;
+}
+
+.page-title {
+	color: #fff;
+	font-size: 3em;
+	margin-bottom: 0.5em;
+}
+
+.stage {
+	background-color: rgba(0, 0, 0, 0.2);
+	color: #fff;
+	border: 0;
+	border-radius: 999px;
+	font-size: 1em;
+	font-weight: bold;
+	padding: 0.25em 0.5em;
+	cursor: pointer;
+}
+
+.settings-btn {
+	position: absolute;
+	transform: translate(calc(250px + 50%), -50%);
+	width: 2em;
+	height: 2em;
+	cursor: pointer;
+}
