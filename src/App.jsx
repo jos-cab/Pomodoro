@@ -10,9 +10,9 @@ function App() {
 	const [showSettings, setShowSettings] = useState(false);
 
 	/*settings*/
-	const [focusTime, setFocusTime] = useState(1500);
-	const [breakTime, setBreakTime] = useState(300);
-	const [longBreakTime, setLongBreakTime] = useState(600);
+	const [focusTime, setFocusTime] = useState(25);
+	const [breakTime, setBreakTime] = useState(5);
+	const [longBreakTime, setLongBreakTime] = useState(10);
 	const [autoStartFocus, setAutoStartFocus] = useState(false);
 	const [autoStartBreaks, setAutoStartBreaks] = useState(false);
 	const [pomodorosUntilLongBreak, setPomodorosUntilLongBreak] = useState(3);
@@ -20,11 +20,11 @@ function App() {
 	const getStageTime = (stage) => {
 		switch (stage) {
 			case "Focus":
-				return focusTime;
+				return focusTime * 60;
 			case "Break":
-				return breakTime;
+				return breakTime * 60;
 			case "Long break":
-				return longBreakTime;
+				return longBreakTime * 60;
 			default:
 				//console.log("Unknown stage:", stage);
 				return 0;
