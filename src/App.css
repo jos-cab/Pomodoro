@@ -50,7 +50,7 @@ main {
 
 .settings-btn {
 	position: absolute;
-	transform: translate(295px, -40%);
+	transform: translate(287.5px, -11.5px);
 	width: 2em;
 	height: 2em;
 	cursor: pointer;
