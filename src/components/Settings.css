@@ -48,3 +48,41 @@ input[type="number"] {
 	justify-content: space-between;
 	margin: 0.25em 0;
 }
+
+input[type="checkbox"] {
+    height: 0; /* make it invisible */
+}
+
+input[type="checkbox"]::before {
+	content: "";
+	display: block;
+	width: 4em;
+	height: 2em;
+	transform: translateX(-75%);
+	border-radius: 999px;
+	background-color: #AAA;
+	border: 1px solid #666;
+}
+
+input[type="checkbox"]::after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 1.75em;
+	height: 1.75em;
+	transform: translate(-165%, -110%);
+	border-radius: 50%;
+	background-color: #666;
+	transition: 0.75s background-color, 0.75s transform;
+}
+
+input[type="checkbox"]:checked::after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 1.75em;
+	height: 1.75em;
+	transform: translate(-50%, -110%);
+	border-radius: 50%;
+	background-color: #fff;
+}

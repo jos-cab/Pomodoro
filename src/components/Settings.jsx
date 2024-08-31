@@ -41,12 +41,12 @@ function Settings({
 	const handleClick = (event) => {
 		event.preventDefault(); // Prevent form submission
 
-		if (formData.focusTime < 1 || formData.focusTime > 86400) return;
-		if (formData.breakTime < 1 || formData.breakTime > 86400) return;
-		if (formData.longBreakTime < 1 || formData.longBreakTime > 86400) return;
+		if (formData.focusTime < 1 || formData.focusTime > 1440) return;
+		if (formData.breakTime < 1 || formData.breakTime > 1440) return;
+		if (formData.longBreakTime < 1 || formData.longBreakTime > 1440) return;
 		if (
 			formData.pomodorosUntilLongBreak < 1 ||
-			formData.pomodorosUntilLongBreak > 86400
+			formData.pomodorosUntilLongBreak > 1440
 		)
 			return;
 
@@ -85,7 +85,7 @@ function Settings({
 			<label htmlFor={field}>{transformCamelCase(field)}</label>
 			<input
 				min={1}
-				max={86400}
+				max={1440}
 				type="number"
 				name={field}
 				id={field}
