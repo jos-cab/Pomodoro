@@ -1,13 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Settings.css";
 
 function Settings({
-  focusTime,
-  breakTime,
-  longBreakTime,
-  autoStartFocus,
-  autoStartBreaks,
-  pomodorosUntilLongBreak,
   setFocusTime,
   setBreakTime,
   setLongBreakTime,
@@ -18,30 +12,41 @@ function Settings({
   setShowSettings,
   updateStage,
 }) {
-  const [formData, setFormData] = useState({
-    focusTime,
-    breakTime,
-    longBreakTime,
-    autoStartFocus,
-    autoStartBreaks,
-    pomodorosUntilLongBreak,
-  });
+  const initialFormData = {
+    focusTime: Number(localStorage.getItem("focusTime")) || 25,
+    breakTime: Number(localStorage.getItem("breakTime")) || 5,
+    longBreakTime: Number(localStorage.getItem("longBreakTime")) || 15,
+    autoStartFocus: localStorage.getItem("autoStartFocus") === "true" || false,
+    autoStartBreaks:
+      localStorage.getItem("autoStartBreaks") === "true" || false,
+    pomodorosUntilLongBreak:
+      Number(localStorage.getItem("pomodorosUntilLongBreak")) || 4,
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleChange = (event) => {
     const { name, type, checked } = event.target;
+    const value = type === "checkbox" ? checked : event.target.value;
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "checkbox" ? checked : event.target.value,
+      [name]: value,
     }));
+
+    localStorage.setItem(name, type === "checkbox" ? value : Number(value));
   };
 
   const handleClick = (event) => {
     event.preventDefault();
 
-    if (formData.focusTime < 1 || formData.focusTime > 1440) return;
-    if (formData.breakTime < 1 || formData.breakTime > 1440) return;
-    if (formData.longBreakTime < 1 || formData.longBreakTime > 1440) return;
     if (
+      formData.focusTime < 1 ||
+      formData.focusTime > 1440 ||
+      formData.breakTime < 1 ||
+      formData.breakTime > 1440 ||
+      formData.longBreakTime < 1 ||
+      formData.longBreakTime > 1440 ||
       formData.pomodorosUntilLongBreak < 1 ||
       formData.pomodorosUntilLongBreak > 1440
     )
