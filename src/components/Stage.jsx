@@ -32,22 +32,37 @@ function Stage({
 	const displayTime =
 		displayHours + ":" + displayMinutes + ":" + displaySeconds;
 
-	const [startColor, setStartColor] = useState({ r: 50, g: 150, b: 200 });
-	const [endColor, setEndColor] = useState({ r: 225, g: 75, b: 75 });
+	const color_1 = { r: 225, g: 75, b: 75 }; // red
+	const color_2 = { r: 50, g: 150, b: 200 }; // blue
+
+	const [startColor, setStartColor] = useState(color_1);
+	const [endColor, setEndColor] = useState(color_2);
 
 	const interpolateColor = (progress) => {
 		// Calculate the interpolated color values
-		const r = Math.floor(startColor.r + progress * (endColor.r - startColor.r));
-		const g = Math.floor(startColor.g + progress * (endColor.g - startColor.g));
-		const b = Math.floor(startColor.b + progress * (endColor.b - startColor.b));
+		const r = Math.floor(
+			startColor.r + (1 - progress) * (endColor.r - startColor.r)
+		);
+		const g = Math.floor(
+			startColor.g + (1 - progress) * (endColor.g - startColor.g)
+		);
+		const b = Math.floor(
+			startColor.b + (1 - progress) * (endColor.b - startColor.b)
+		);
+
 		return `rgb(${r}, ${g}, ${b})`;
 	};
 
 	useEffect(() => {
 		if (StartBtn.current) {
-			StartBtn.current.style.color = interpolateColor(
+			const rgbColor = interpolateColor(
 				currentTime / getStageTime(currentStage)
 			);
+			const rgbaColor = rgbColor
+				.replace("rgb", "rgba")
+				.replace(")", ", 0.8)");
+			console.log(rgbaColor);
+			StartBtn.current.style.color = rgbaColor;
 		}
 	});
 
@@ -59,12 +74,12 @@ function Stage({
 		setCurrentTime(getStageTime(currentStage));
 		if (currentStage == "Focus") {
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
-			setStartColor({ r: 50, g: 150, b: 200 });
-			setEndColor({ r: 225, g: 75, b: 75 });
+			setStartColor(color_1);
+			setEndColor(color_2);
 		} else {
 			setTimeout(() => setIsRunning(autoStartBreaks), 0);
-			setStartColor({ r: 225, g: 75, b: 75 });
-			setEndColor({ r: 50, g: 150, b: 200 });
+			setStartColor(color_2);
+			setEndColor(color_1);
 		}
 	}, [currentStage]);
 
@@ -99,7 +114,9 @@ function Stage({
 				const newPomodoros = pomodoros + 1;
 				setTimeout(() => setPomodoros(newPomodoros), 0);
 				nextStage =
-					newPomodoros % pomodorosUntilLongBreak == 0 ? "Long break" : "Break";
+					newPomodoros % pomodorosUntilLongBreak == 0
+						? "Long break"
+						: "Break";
 				break;
 			case "Break":
 				nextStage = "Focus";
@@ -126,7 +143,8 @@ function Stage({
 			<button
 				className="start-btn"
 				ref={StartBtn}
-				onClick={() => setIsRunning(!isRunning)}>
+				onClick={() => setIsRunning(!isRunning)}
+			>
 				{isRunning ? "Stop" : "Start"}
 			</button>
 		</>

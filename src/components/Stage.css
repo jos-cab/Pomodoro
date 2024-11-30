@@ -34,10 +34,16 @@
 	text-transform: uppercase;
 	background-color: #fff;
 	border: 0;
+	border-bottom: 5px solid #aaa;
 	border-radius: 5px;
 	cursor: pointer;
-	-webkit-filter: brightness(110%);
-	filter: brightness(110%);
+	position: relative;
+	top: 0;
+}
+
+.start-btn:active {
+	top: 5px;
+	border-bottom: 5px solid transparent;
 }
 
 @media (min-width: 768px) {
