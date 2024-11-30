@@ -1,73 +1,64 @@
 @import url("https://fonts.googleapis.com/css2?family=Playwrite+AR:wght@100..400&family=Roboto&display=swap");
 
 * {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 
 :root {
-  font-family: "Playwrite AR", cursive;
+	font-family: "Playwrite AR", cursive;
 }
 
 main {
-  background-color: rgba(255, 255, 255, 0.1);
-  max-width: 90%;
-  max-height: 90%;
-  min-width: 350px;
-  min-height: 375px;
-  border-radius: 10px;
-  padding: 25px;
-}
-
-.stage-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  position: relative;
-  -webkit-transform: translateY(15px);
-  -ms-transform: translateY(15px);
-  transform: translateY(15px);
+	background-color: rgba(255, 255, 255, 0.1);
+	max-width: 90%;
+	width: 350px;
+	border-radius: 10px;
+	padding: 25px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .title {
-  text-align: center;
+	text-align: center;
 }
 
 .page-title {
-  color: #fff;
-  font-size: 3.25em;
+	color: #fff;
+	font-size: 3.25em;
 }
 
 .stage {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  border: 0;
-  border-radius: 999px;
-  font-size: 1.05em;
-  font-weight: bold;
-  padding: 0.25em 0.75em;
-  cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.2);
+	color: #fff;
+	border: 0;
+	border-radius: 999px;
+	font-size: 1.05em;
+	font-weight: bold;
+	padding: 0.25em 0.75em;
+	cursor: pointer;
+	text-wrap: nowrap;
 }
 
 .settings-btn {
-  position: absolute;
-  -webkit-transform: translate(287.5px, -11.5px);
-  -ms-transform: translate(287.5px, -11.5px);
-  transform: translate(287.5px, -11.5px);
-  width: 2em;
-  height: 2em;
-  cursor: pointer;
-  border: 0;
-  background-color: transparent;
+	align-self: flex-end;
+	position: absolute;
+	transform: translate(55%, -45%);
+	width: 2em;
+	height: 2em;
+	cursor: pointer;
+	border: 0;
+	background-color: transparent;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .settings-btn img {
-  -webkit-transform: translate(-20%, -20%) scale(0.75);
-  -ms-transform: translate(-20%, -20%) scale(0.75);
-  transform: translate(-20%, -20%) scale(0.75);
+	-webkit-transform: scale(0.75);
+	-ms-transform: scale(0.75);
+	transform: scale(0.75);
 }
