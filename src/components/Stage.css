@@ -34,16 +34,17 @@
 	text-transform: uppercase;
 	background-color: #fff;
 	border: 0;
-	border-bottom: 5px solid #aaa;
 	border-radius: 5px;
+	box-shadow: -5px 5px 0 0 rgba(0, 0, 0, 0.2);
 	cursor: pointer;
 	position: relative;
 	top: 0;
+	transition: all 0.1s ease-out;
 }
 
 .start-btn:active {
 	top: 5px;
-	border-bottom: 5px solid transparent;
+	box-shadow: 0 0 rgba(0, 0, 0, 0);
 }
 
 @media (min-width: 768px) {

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import endStageSoundSource from "../public/end-stage.mp3";
+import clickButton from "../public/interface-button.mp3";
 import "./Stage.css";
 
 const Root = document.getElementById("root");
@@ -18,6 +19,7 @@ function Stage({
 	const [currentTime, setCurrentTime] = useState(getStageTime(currentStage));
 	const interval = useRef(null);
 	const endStageSound = new Audio(endStageSoundSource);
+	const clickButtonSound = new Audio(clickButton);
 
 	const StartBtn = useRef(null);
 
@@ -61,7 +63,6 @@ function Stage({
 			const rgbaColor = rgbColor
 				.replace("rgb", "rgba")
 				.replace(")", ", 0.8)");
-			console.log(rgbaColor);
 			StartBtn.current.style.color = rgbaColor;
 		}
 	});
@@ -143,7 +144,10 @@ function Stage({
 			<button
 				className="start-btn"
 				ref={StartBtn}
-				onClick={() => setIsRunning(!isRunning)}
+				onClick={() => {
+					setIsRunning(!isRunning);
+					clickButtonSound.play();
+				}}
 			>
 				{isRunning ? "Stop" : "Start"}
 			</button>
