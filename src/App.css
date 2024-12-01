@@ -1,24 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Playwrite+AR:wght@100..400&family=Roboto&display=swap");
-
-* {
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-}
-
-:root {
-	font-family: "Playwrite AR", cursive;
-}
-
 main {
 	background-color: rgba(255, 255, 255, 0.2);
 	max-width: 90%;
 	width: 350px;
 	border-radius: 10px;
 	padding: 25px;
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
 	flex-direction: column;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
 	align-items: center;
 }
 
@@ -45,16 +39,25 @@ main {
 }
 
 .settings-btn {
+	-ms-flex-item-align: end;
 	align-self: flex-end;
 	position: absolute;
+	-webkit-transform: translate(55%, -45%);
+	-ms-transform: translate(55%, -45%);
 	transform: translate(55%, -45%);
 	width: 2em;
 	height: 2em;
 	cursor: pointer;
 	border: 0;
 	background-color: transparent;
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
 	justify-content: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
 	align-items: center;
 }
 
