@@ -17,7 +17,8 @@
 	background-color: rgb(231, 230, 230);
 	width: 350px;
 	max-width: 90%;
-	min-height: 500px;
+	height: 98%;
+	max-height: 500px;
 	border-radius: 10px;
 	padding: 1em 0.5em;
 }
