@@ -1,16 +1,9 @@
 .stage-container {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
-	justify-content: space-between;
+	flex-direction: column;
 	position: relative;
-	-webkit-transform: translateY(15px);
-	-ms-transform: translateY(15px);
-	transform: translateY(15px);
 	width: 100%;
-	flex-wrap: wrap;
+	gap: 0.25em;
 }
 
 .timer {
@@ -51,5 +44,10 @@
 @media (min-width: 768px) {
 	.timer {
 		font-size: 3em;
+	}
+
+	.stage-container {
+		flex-direction: row;
+		justify-content: space-between;
 	}
 }
