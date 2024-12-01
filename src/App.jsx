@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Stage from "./components/Stage";
 import Settings from "./components/Settings";
 import settingsIcon from "./public/settings.svg";
@@ -9,50 +9,81 @@ function App() {
 	const [pomodoros, setPomodoros] = useState(0);
 	const [showSettings, setShowSettings] = useState(false);
 
-	// Initialize state with localStorage values
-	const [focusTime, setFocusTime] = useState(
-		() => Number(localStorage.getItem("focusTime")) || 25
+	const [focusTimeHours, setFocusTimeHours] = useState(
+		localStorage.getItem("focusTimeHours")
+			? Number(localStorage.getItem("focusTimeHours"))
+			: 0
 	);
-	const [breakTime, setBreakTime] = useState(
-		() => Number(localStorage.getItem("breakTime")) || 5
+	const [focusTimeMinutes, setFocusTimeMinutes] = useState(
+		localStorage.getItem("focusTimeMinutes")
+			? Number(localStorage.getItem("focusTimeMinutes"))
+			: 25
 	);
-	const [longBreakTime, setLongBreakTime] = useState(
-		() => Number(localStorage.getItem("longBreakTime")) || 10
+	const [focusTimeSeconds, setFocusTimeSeconds] = useState(
+		localStorage.getItem("focusTimeSeconds")
+			? Number(localStorage.getItem("focusTimeSeconds"))
+			: 0
 	);
-	const [autoStartFocus, setAutoStartFocus] = useState(
-		() => localStorage.getItem("autoStartFocus") === "true" || false
+	const [breakTimeHours, setBreakTimeHours] = useState(
+		localStorage.getItem("breakTimeHours")
+			? Number(localStorage.getItem("breakTimeHours"))
+			: 0
 	);
-	const [autoStartBreaks, setAutoStartBreaks] = useState(
-		() => localStorage.getItem("autoStartBreaks") === "true" || false
+	const [breakTimeMinutes, setBreakTimeMinutes] = useState(
+		localStorage.getItem("breakTimeMinutes")
+			? Number(localStorage.getItem("breakTimeMinutes"))
+			: 5
 	);
-	const [pomodorosUntilLongBreak, setPomodorosUntilLongBreak] = useState(
-		() => Number(localStorage.getItem("pomodorosUntilLongBreak")) || 3
+	const [breakTimeSeconds, setBreakTimeSeconds] = useState(
+		localStorage.getItem("breakTimeSeconds")
+			? Number(localStorage.getItem("breakTimeSeconds"))
+			: 0
+	);
+	const [longBreakTimeHours, setLongBreakTimeHours] = useState(
+		localStorage.getItem("longBreakTimeHours")
+			? Number(localStorage.getItem("longBreakTimeHours"))
+			: 0
+	);
+	const [longBreakTimeMinutes, setLongBreakTimeMinutes] = useState(
+		localStorage.getItem("longBreakTimeMinutes")
+			? Number(localStorage.getItem("longBreakTimeMinutes"))
+			: 10
+	);
+	const [longBreakTimeSeconds, setLongBreakTimeSeconds] = useState(
+		localStorage.getItem("longBreakTimeSeconds")
+			? Number(localStorage.getItem("longBreakTimeSeconds"))
+			: 0
 	);
 
-	useEffect(() => {
-		// Load settings from localStorage when the component mounts
-		setFocusTime(Number(localStorage.getItem("focusTime")) || 25);
-		setBreakTime(Number(localStorage.getItem("breakTime")) || 5);
-		setLongBreakTime(Number(localStorage.getItem("longBreakTime")) || 10);
-		setAutoStartFocus(
-			localStorage.getItem("autoStartFocus") === "true" || false
-		);
-		setAutoStartBreaks(
-			localStorage.getItem("autoStartBreaks") === "true" || false
-		);
-		setPomodorosUntilLongBreak(
-			Number(localStorage.getItem("pomodorosUntilLongBreak")) || 3
-		);
-	}, []);
+	const [autoStartFocus, setAutoStartFocus] = useState(
+		localStorage.getItem("autoStartFocus") === "true"
+	);
+	const [autoStartBreaks, setAutoStartBreaks] = useState(
+		localStorage.getItem("autoStartBreaks") === "true"
+	);
+	const [pomodorosUntilLongBreak, setPomodorosUntilLongBreak] = useState(
+		localStorage.getItem("pomodorosUntilLongBreak")
+			? Number(localStorage.getItem("pomodorosUntilLongBreak"))
+			: 3
+	);
+
+	const focusTime =
+		focusTimeHours * 3600 + focusTimeMinutes * 60 + focusTimeSeconds;
+	const breakTime =
+		breakTimeHours * 3600 + breakTimeMinutes * 60 + breakTimeSeconds;
+	const longBreakTime =
+		longBreakTimeHours * 3600 +
+		longBreakTimeMinutes * 60 +
+		longBreakTimeSeconds;
 
 	const getStageTime = (stage) => {
 		switch (stage) {
 			case "Focus":
-				return focusTime * 60;
+				return focusTime;
 			case "Break":
-				return breakTime * 60;
+				return breakTime;
 			case "Long break":
-				return longBreakTime * 60;
+				return longBreakTime;
 			default:
 				return 0;
 		}
@@ -106,9 +137,15 @@ function App() {
 					autoStartFocus={autoStartFocus}
 					autoStartBreaks={autoStartBreaks}
 					pomodorosUntilLongBreak={pomodorosUntilLongBreak}
-					setFocusTime={setFocusTime}
-					setBreakTime={setBreakTime}
-					setLongBreakTime={setLongBreakTime}
+					setFocusTimeHours={setFocusTimeHours}
+					setFocusTimeMinutes={setFocusTimeMinutes}
+					setFocusTimeSeconds={setFocusTimeSeconds}
+					setBreakTimeHours={setBreakTimeHours}
+					setBreakTimeMinutes={setBreakTimeMinutes}
+					setBreakTimeSeconds={setBreakTimeSeconds}
+					setLongBreakTimeHours={setLongBreakTimeHours}
+					setLongBreakTimeMinutes={setLongBreakTimeMinutes}
+					setLongBreakTimeSeconds={setLongBreakTimeSeconds}
 					setAutoStartFocus={setAutoStartFocus}
 					setAutoStartBreaks={setAutoStartBreaks}
 					setPomodorosUntilLongBreak={setPomodorosUntilLongBreak}

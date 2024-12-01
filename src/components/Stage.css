@@ -27,6 +27,7 @@
 }
 
 .start-btn {
+	color: rgba(225, 75, 75, 0.8);
 	width: 75%;
 	font-size: 1.5em;
 	font-weight: bold;
