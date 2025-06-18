@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import endStageSoundSource from "../public/end-stage.mp3";
-import clickButton from "../public/interface-button.mp3";
-import "./Stage.css";
+import { useState, useRef, useEffect } from 'react';
+import endStageSoundSource from '../public/end-stage.mp3';
+import clickButton from '../public/interface-button.mp3';
+import './Stage.css';
 
-const Root = document.getElementById("root");
+const Root = document.getElementById('root');
 
 function Stage({
 	getStageTime,
@@ -20,6 +20,7 @@ function Stage({
 	const interval = useRef(null);
 	const endStageSound = new Audio(endStageSoundSource);
 	const clickButtonSound = new Audio(clickButton);
+	const endTimeRef = useRef(null);
 
 	const StartBtn = useRef(null);
 
@@ -27,12 +28,12 @@ function Stage({
 	let displayMinutes = Math.floor(currentTime / 60) % 60;
 	let displaySeconds = currentTime % 60;
 
-	if (displayHours < 10) displayHours = "0" + displayHours;
-	if (displayMinutes < 10) displayMinutes = "0" + displayMinutes;
-	if (displaySeconds < 10) displaySeconds = "0" + displaySeconds;
+	if (displayHours < 10) displayHours = '0' + displayHours;
+	if (displayMinutes < 10) displayMinutes = '0' + displayMinutes;
+	if (displaySeconds < 10) displaySeconds = '0' + displaySeconds;
 
 	const displayTime =
-		displayHours + ":" + displayMinutes + ":" + displaySeconds;
+		displayHours + ':' + displayMinutes + ':' + displaySeconds;
 
 	const color_1 = { r: 225, g: 75, b: 75 }; // red
 	const color_2 = { r: 50, g: 150, b: 200 }; // blue
@@ -61,8 +62,8 @@ function Stage({
 				currentTime / getStageTime(currentStage)
 			);
 			const rgbaColor = rgbColor
-				.replace("rgb", "rgba")
-				.replace(")", ", 0.8)");
+				.replace('rgb', 'rgba')
+				.replace(')', ', 0.8)');
 			StartBtn.current.style.color = rgbaColor;
 		}
 	});
@@ -72,8 +73,9 @@ function Stage({
 	);
 
 	useEffect(() => {
+		endTimeRef.current = null;
 		setCurrentTime(getStageTime(currentStage));
-		if (currentStage == "Focus") {
+		if (currentStage == 'Focus') {
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
 			setStartColor(color_1);
 			setEndColor(color_2);
@@ -86,24 +88,32 @@ function Stage({
 
 	useEffect(() => {
 		if (isRunning) {
-			interval.current = setInterval(() => {
-				setCurrentTime((prevTime) => {
-					if (prevTime <= 1) {
-						clearInterval(interval.current);
-						setIsRunning(false);
-						handleStageTransition();
-						return 0;
-					}
+			// Set end time only once when timer starts
+			if (!endTimeRef.current) {
+				endTimeRef.current =
+					Date.now() + getStageTime(currentStage) * 1000;
+			}
 
-					return prevTime - 1;
-				});
+			interval.current = setInterval(() => {
+				const diff = Math.max(
+					0,
+					Math.floor((endTimeRef.current - Date.now()) / 1000)
+				);
+				setCurrentTime(diff);
+
+				if (diff <= 0) {
+					clearInterval(interval.current);
+					endTimeRef.current = null;
+					setIsRunning(false);
+					handleStageTransition();
+				}
 			}, 1000);
 		} else {
 			clearInterval(interval.current);
 		}
 
 		return () => clearInterval(interval.current);
-	}, [isRunning]);
+	}, [isRunning, currentStage]);
 
 	const handleStageTransition = () => {
 		endStageSound.play();
@@ -111,26 +121,26 @@ function Stage({
 		let nextStage;
 
 		switch (currentStage) {
-			case "Focus":
+			case 'Focus':
 				const newPomodoros = pomodoros + 1;
 				setTimeout(() => setPomodoros(newPomodoros), 0);
 				nextStage =
 					newPomodoros % pomodorosUntilLongBreak == 0
-						? "Long break"
-						: "Break";
+						? 'Long break'
+						: 'Break';
 				break;
-			case "Break":
-				nextStage = "Focus";
+			case 'Break':
+				nextStage = 'Focus';
 				break;
-			case "Long break":
-				nextStage = "Focus";
+			case 'Long break':
+				nextStage = 'Focus';
 				break;
 			default:
 				//console.error("Unknown stage:", currentStage);
 				return;
 		}
 
-		nextStage == "Focus"
+		nextStage == 'Focus'
 			? setTimeout(() => setIsRunning(autoStartFocus), 0)
 			: setTimeout(() => setIsRunning(autoStartBreaks), 0);
 
@@ -140,16 +150,15 @@ function Stage({
 
 	return (
 		<>
-			<h1 className="timer">{displayTime}</h1>
+			<h1 className='timer'>{displayTime}</h1>
 			<button
-				className="start-btn"
+				className='start-btn'
 				ref={StartBtn}
 				onClick={() => {
 					setIsRunning(!isRunning);
 					clickButtonSound.play();
-				}}
-			>
-				{isRunning ? "Stop" : "Start"}
+				}}>
+				{isRunning ? 'Stop' : 'Start'}
 			</button>
 		</>
 	);
