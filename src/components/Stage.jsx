@@ -21,6 +21,7 @@ function Stage({
 	const endStageSound = new Audio(endStageSoundSource);
 	const clickButtonSound = new Audio(clickButton);
 	const endTimeRef = useRef(null);
+	const pauseTimeRef = useRef(null);
 
 	const StartBtn = useRef(null);
 
@@ -76,23 +77,29 @@ function Stage({
 		endTimeRef.current = null;
 		setCurrentTime(getStageTime(currentStage));
 		if (currentStage == 'Focus') {
-			setTimeout(() => setIsRunning(autoStartFocus), 0);
 			setStartColor(color_1);
 			setEndColor(color_2);
+			setTimeout(() => setIsRunning(autoStartFocus), 0);
 		} else {
-			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 			setStartColor(color_2);
 			setEndColor(color_1);
+			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 		}
 	}, [currentStage]);
 
 	useEffect(() => {
 		if (isRunning) {
-			// Set end time only once when timer starts
+			const now = Date.now();
+
 			if (!endTimeRef.current) {
-				endTimeRef.current =
-					Date.now() + getStageTime(currentStage) * 1000;
+				endTimeRef.current = now + currentTime * 1000;
 			}
+
+			const initialDiff = Math.max(
+				0,
+				Math.floor((endTimeRef.current - now) / 1000)
+			);
+			setCurrentTime(initialDiff);
 
 			interval.current = setInterval(() => {
 				const diff = Math.max(
@@ -148,16 +155,29 @@ function Stage({
 		setTimeout(() => setCurrentTime(getStageTime(nextStage)), 0);
 	};
 
+	const handlePause = () => {
+		clickButtonSound.play();
+
+		if (isRunning) {
+			const remaining = Math.max(
+				0,
+				Math.floor((endTimeRef.current - Date.now()) / 1000)
+			);
+			pauseTimeRef.current = remaining;
+			setCurrentTime(remaining);
+			setIsRunning(false);
+		} else {
+			const timeLeft = pauseTimeRef.current ?? currentTime;
+			endTimeRef.current = Date.now() + timeLeft * 1000;
+			pauseTimeRef.current = null;
+			setIsRunning(true);
+		}
+	};
+
 	return (
 		<>
 			<h1 className='timer'>{displayTime}</h1>
-			<button
-				className='start-btn'
-				ref={StartBtn}
-				onClick={() => {
-					setIsRunning(!isRunning);
-					clickButtonSound.play();
-				}}>
+			<button className='start-btn' ref={StartBtn} onClick={handlePause}>
 				{isRunning ? 'Stop' : 'Start'}
 			</button>
 		</>
