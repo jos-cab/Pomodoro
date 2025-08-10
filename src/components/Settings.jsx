@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "./Settings.css";
+import React, { useState } from 'react';
+import './Settings.css';
 
 function Settings({
 	setFocusTimeHours,
@@ -20,52 +20,52 @@ function Settings({
 }) {
 	const initialFormData = {
 		focusTimeHours:
-			localStorage.getItem("focusTimeHours") !== null
-				? Number(localStorage.getItem("focusTimeHours"))
+			localStorage.getItem('focusTimeHours') !== null
+				? Number(localStorage.getItem('focusTimeHours'))
 				: 0,
 		focusTimeMinutes:
-			localStorage.getItem("focusTimeMinutes") !== null
-				? Number(localStorage.getItem("focusTimeMinutes"))
+			localStorage.getItem('focusTimeMinutes') !== null
+				? Number(localStorage.getItem('focusTimeMinutes'))
 				: 25,
 		focusTimeSeconds:
-			localStorage.getItem("focusTimeSeconds") !== null
-				? Number(localStorage.getItem("focusTimeSeconds"))
+			localStorage.getItem('focusTimeSeconds') !== null
+				? Number(localStorage.getItem('focusTimeSeconds'))
 				: 0,
 		breakTimeHours:
-			localStorage.getItem("breakTimeHours") !== null
-				? Number(localStorage.getItem("breakTimeHours"))
+			localStorage.getItem('breakTimeHours') !== null
+				? Number(localStorage.getItem('breakTimeHours'))
 				: 0,
 		breakTimeMinutes:
-			localStorage.getItem("breakTimeMinutes") !== null
-				? Number(localStorage.getItem("breakTimeMinutes"))
+			localStorage.getItem('breakTimeMinutes') !== null
+				? Number(localStorage.getItem('breakTimeMinutes'))
 				: 5,
 		breakTimeSeconds:
-			localStorage.getItem("breakTimeSeconds") !== null
-				? Number(localStorage.getItem("breakTimeSeconds"))
+			localStorage.getItem('breakTimeSeconds') !== null
+				? Number(localStorage.getItem('breakTimeSeconds'))
 				: 0,
 		longBreakTimeHours:
-			localStorage.getItem("longBreakTimeHours") !== null
-				? Number(localStorage.getItem("longBreakTimeHours"))
+			localStorage.getItem('longBreakTimeHours') !== null
+				? Number(localStorage.getItem('longBreakTimeHours'))
 				: 0,
 		longBreakTimeMinutes:
-			localStorage.getItem("longBreakTimeMinutes") !== null
-				? Number(localStorage.getItem("longBreakTimeMinutes"))
-				: 15,
+			localStorage.getItem('longBreakTimeMinutes') !== null
+				? Number(localStorage.getItem('longBreakTimeMinutes'))
+				: 10,
 		longBreakTimeSeconds:
-			localStorage.getItem("longBreakTimeSeconds") !== null
-				? Number(localStorage.getItem("longBreakTimeSeconds"))
+			localStorage.getItem('longBreakTimeSeconds') !== null
+				? Number(localStorage.getItem('longBreakTimeSeconds'))
 				: 0,
 		autoStartFocus:
-			localStorage.getItem("autoStartFocus") !== null
-				? localStorage.getItem("autoStartFocus") === "true"
+			localStorage.getItem('autoStartFocus') !== null
+				? localStorage.getItem('autoStartFocus') === 'true'
 				: false,
 		autoStartBreaks:
-			localStorage.getItem("autoStartBreaks") !== null
-				? localStorage.getItem("autoStartBreaks") === "true"
+			localStorage.getItem('autoStartBreaks') !== null
+				? localStorage.getItem('autoStartBreaks') === 'true'
 				: false,
 		pomodorosUntilLongBreak:
-			localStorage.getItem("pomodorosUntilLongBreak") !== null
-				? Number(localStorage.getItem("pomodorosUntilLongBreak"))
+			localStorage.getItem('pomodorosUntilLongBreak') !== null
+				? Number(localStorage.getItem('pomodorosUntilLongBreak'))
 				: 3,
 	};
 
@@ -74,7 +74,7 @@ function Settings({
 	const handleChange = (event) => {
 		const { name, type, checked } = event.target;
 		const value =
-			type === "checkbox" ? checked : Number(event.target.value);
+			type === 'checkbox' ? checked : Number(event.target.value);
 
 		setFormData((prevData) => ({
 			...prevData,
@@ -83,7 +83,7 @@ function Settings({
 
 		localStorage.setItem(
 			name,
-			type === "checkbox" ? value : value.toString()
+			type === 'checkbox' ? value : value.toString()
 		);
 	};
 
@@ -152,21 +152,21 @@ function Settings({
 	};
 
 	const numericSettingFields = [
-		"focusTime",
-		"breakTime",
-		"longBreakTime",
-		"pomodorosUntilLongBreak",
+		'focusTime',
+		'breakTime',
+		'longBreakTime',
+		'pomodorosUntilLongBreak',
 	];
 
-	const checkSettingFields = ["autoStartFocus", "autoStartBreaks"];
+	const checkSettingFields = ['autoStartFocus', 'autoStartBreaks'];
 
 	const transformCamelCase = (str) => {
 		const words = str
-			.replace(/([a-z])([A-Z])/g, "$1 $2")
-			.split(" ")
+			.replace(/([a-z])([A-Z])/g, '$1 $2')
+			.split(' ')
 			.map((word) => word.toLowerCase());
 		words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
-		return words.join(" ");
+		return words.join(' ');
 	};
 
 	const handleLabelClick = (e, inputId) => {
@@ -179,54 +179,52 @@ function Settings({
 	};
 
 	const numericSettingFieldsComponents = numericSettingFields.map((field) =>
-		field.includes("Time") ? (
-			<div className="input-field" key={field}>
+		field.includes('Time') ? (
+			<div className='input-field' key={field}>
 				<label
-					htmlFor={field + "Hours"}
-					onClick={(e) => handleLabelClick(e, field + "Hours")}
-				>
+					htmlFor={field + 'Hours'}
+					onClick={(e) => handleLabelClick(e, field + 'Hours')}>
 					{transformCamelCase(field)}
 				</label>
 				<input
 					min={0}
 					max={24}
-					type="number"
-					name={field + "Hours"}
-					id={field + "Hours"}
-					value={formData[field + "Hours"]}
+					type='number'
+					name={field + 'Hours'}
+					id={field + 'Hours'}
+					value={formData[field + 'Hours']}
 					onChange={handleChange}
 				/>
 				<input
 					min={0}
 					max={59}
-					type="number"
-					name={field + "Minutes"}
-					id={field + "Minutes"}
-					value={formData[field + "Minutes"]}
+					type='number'
+					name={field + 'Minutes'}
+					id={field + 'Minutes'}
+					value={formData[field + 'Minutes']}
 					onChange={handleChange}
 				/>
 				<input
 					min={0}
 					max={59}
-					type="number"
-					name={field + "Seconds"}
-					id={field + "Seconds"}
-					value={formData[field + "Seconds"]}
+					type='number'
+					name={field + 'Seconds'}
+					id={field + 'Seconds'}
+					value={formData[field + 'Seconds']}
 					onChange={handleChange}
 				/>
 			</div>
 		) : (
-			<div className="input-field" key={field}>
+			<div className='input-field' key={field}>
 				<label
 					htmlFor={field}
-					onClick={(e) => handleLabelClick(e, field)}
-				>
+					onClick={(e) => handleLabelClick(e, field)}>
 					{transformCamelCase(field)}
 				</label>
 				<input
 					min={1}
 					max={99}
-					type="number"
+					type='number'
 					name={field}
 					id={field}
 					value={formData[field]}
@@ -237,10 +235,10 @@ function Settings({
 	);
 
 	const checkSettingFieldsComponents = checkSettingFields.map((field) => (
-		<div className="input-field" key={field}>
+		<div className='input-field' key={field}>
 			<label htmlFor={field}>{transformCamelCase(field)}</label>
 			<input
-				type="checkbox"
+				type='checkbox'
 				name={field}
 				id={field}
 				checked={formData[field]}
@@ -251,7 +249,7 @@ function Settings({
 					handleChange({
 						target: {
 							name: field,
-							type: "checkbox",
+							type: 'checkbox',
 							checked: !formData[field],
 						},
 					})
@@ -262,12 +260,12 @@ function Settings({
 
 	return (
 		<>
-			<div className="settings-background"></div>
-			<form id="settings">
-				<h2 className="title settings-title">Settings</h2>
+			<div className='settings-background'></div>
+			<form id='settings'>
+				<h2 className='title settings-title'>Settings</h2>
 				{numericSettingFieldsComponents}
 				{checkSettingFieldsComponents}
-				<button className="save-settings" onClick={handleClick}>
+				<button className='save-settings' onClick={handleClick}>
 					Save Settings
 				</button>
 			</form>

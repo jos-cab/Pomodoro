@@ -74,9 +74,14 @@ function Stage({
 	);
 
 	useEffect(() => {
+		// Reset all timer state when stage changes
+		setIsRunning(false);
+		clearInterval(interval.current);
 		endTimeRef.current = null;
+		pauseTimeRef.current = null;
 		setCurrentTime(getStageTime(currentStage));
-		if (currentStage == 'Focus') {
+
+		if (currentStage === 'Focus') {
 			setStartColor(color_1);
 			setEndColor(color_2);
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
@@ -130,9 +135,9 @@ function Stage({
 		switch (currentStage) {
 			case 'Focus':
 				const newPomodoros = pomodoros + 1;
-				setTimeout(() => setPomodoros(newPomodoros), 0);
+				setPomodoros(newPomodoros);
 				nextStage =
-					newPomodoros % pomodorosUntilLongBreak == 0
+					newPomodoros % pomodorosUntilLongBreak === 0
 						? 'Long break'
 						: 'Break';
 				break;
@@ -147,18 +152,20 @@ function Stage({
 				return;
 		}
 
-		nextStage == 'Focus'
-			? setTimeout(() => setIsRunning(autoStartFocus), 0)
-			: setTimeout(() => setIsRunning(autoStartBreaks), 0);
+		// Clean up current timer state before transitioning
+		setIsRunning(false);
+		clearInterval(interval.current);
+		endTimeRef.current = null;
+		pauseTimeRef.current = null;
 
-		setTimeout(() => setCurrentStage(nextStage), 0);
-		setTimeout(() => setCurrentTime(getStageTime(nextStage)), 0);
+		setCurrentStage(nextStage);
 	};
 
 	const handlePause = () => {
 		clickButtonSound.play();
 
 		if (isRunning) {
+			clearInterval(interval.current);
 			const remaining = Math.max(
 				0,
 				Math.floor((endTimeRef.current - Date.now()) / 1000)
