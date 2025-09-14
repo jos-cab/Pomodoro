@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Stage from './components/Stage';
 import Settings from './components/Settings';
 import settingsIcon from './public/settings.svg';
@@ -76,22 +76,28 @@ function App() {
 		longBreakTimeMinutes * 60 +
 		longBreakTimeSeconds;
 
-	const getStageTime = (stage) => {
-		switch (stage) {
-			case 'Focus':
-				return focusTime;
-			case 'Break':
-				return breakTime;
-			case 'Long break':
-				return longBreakTime;
-			default:
-				return 0;
-		}
-	};
+	const getStageTime = useCallback(
+		(stage) => {
+			switch (stage) {
+				case 'Focus':
+					return focusTime;
+				case 'Break':
+					return breakTime;
+				case 'Long break':
+					return longBreakTime;
+				default:
+					return 0;
+			}
+		},
+		[focusTime, breakTime, longBreakTime]
+	);
 
-	const updateStage = (stage) => {
-		setCurrentStage(stage);
-	};
+	const updateStage = useCallback(
+		(stage) => {
+			setCurrentStage(stage);
+		},
+		[setCurrentStage]
+	);
 
 	return (
 		<main>

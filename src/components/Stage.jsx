@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import endStageSoundSource from '../public/end-stage.mp3';
 import clickButton from '../public/interface-button.mp3';
@@ -19,8 +19,6 @@ function Stage({
 	const [isRunning, setIsRunning] = useState(false);
 	const [currentTime, setCurrentTime] = useState(getStageTime(currentStage));
 	const interval = useRef(null);
-	const endStageSound = new Audio(endStageSoundSource);
-	const clickButtonSound = new Audio(clickButton);
 	const endTimeRef = useRef(null);
 	const pauseTimeRef = useRef(null);
 
@@ -37,26 +35,29 @@ function Stage({
 	const displayTime =
 		displayHours + ':' + displayMinutes + ':' + displaySeconds;
 
-	const color_1 = { r: 225, g: 75, b: 75 }; // red
-	const color_2 = { r: 50, g: 150, b: 200 }; // blue
+	const color_1 = useMemo(() => ({ r: 225, g: 75, b: 75 }), []); // red
+	const color_2 = useMemo(() => ({ r: 50, g: 150, b: 200 }), []); // blue
 
 	const [startColor, setStartColor] = useState(color_1);
 	const [endColor, setEndColor] = useState(color_2);
 
-	const interpolateColor = (progress) => {
-		// Calculate the interpolated color values
-		const r = Math.floor(
-			startColor.r + (1 - progress) * (endColor.r - startColor.r)
-		);
-		const g = Math.floor(
-			startColor.g + (1 - progress) * (endColor.g - startColor.g)
-		);
-		const b = Math.floor(
-			startColor.b + (1 - progress) * (endColor.b - startColor.b)
-		);
+	const interpolateColor = useCallback(
+		(progress) => {
+			// Calculate the interpolated color values
+			const r = Math.floor(
+				startColor.r + (1 - progress) * (endColor.r - startColor.r)
+			);
+			const g = Math.floor(
+				startColor.g + (1 - progress) * (endColor.g - startColor.g)
+			);
+			const b = Math.floor(
+				startColor.b + (1 - progress) * (endColor.b - startColor.b)
+			);
 
-		return `rgb(${r}, ${g}, ${b})`;
-	};
+			return `rgb(${r}, ${g}, ${b})`;
+		},
+		[startColor, endColor]
+	);
 
 	useEffect(() => {
 		if (StartBtn.current) {
@@ -68,7 +69,7 @@ function Stage({
 				.replace(')', ', 0.8)');
 			StartBtn.current.style.color = rgbaColor;
 		}
-	});
+	}, [currentTime, currentStage, getStageTime, interpolateColor]);
 
 	Root.style.backgroundColor = interpolateColor(
 		currentTime / getStageTime(currentStage)
@@ -91,7 +92,54 @@ function Stage({
 			setEndColor(color_1);
 			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 		}
-	}, [currentStage]);
+	}, [
+		currentStage,
+		getStageTime,
+		color_1,
+		color_2,
+		autoStartFocus,
+		autoStartBreaks,
+	]);
+
+	const handleStageTransition = useCallback(() => {
+		const endStageSound = new Audio(endStageSoundSource);
+		endStageSound.play();
+
+		let nextStage;
+
+		switch (currentStage) {
+			case 'Focus':
+				setPomodoros(pomodoros + 1);
+				nextStage =
+					pomodoros % pomodorosUntilLongBreak === 0
+						? 'Long break'
+						: 'Break';
+				break;
+			case 'Break':
+				nextStage = 'Focus';
+				break;
+			case 'Long break':
+				nextStage = 'Focus';
+				break;
+			default:
+				console.error('Unknown stage:', currentStage);
+				return;
+		}
+
+		// Clean up current timer state before transitioning
+		setIsRunning(false);
+		clearInterval(interval.current);
+		endTimeRef.current = null;
+		pauseTimeRef.current = null;
+
+		setCurrentStage(nextStage);
+	}, [
+		currentStage,
+		pomodoros,
+		pomodorosUntilLongBreak,
+		setPomodoros,
+		setCurrentStage,
+	]);
 
 	useEffect(() => {
 		if (isRunning) {
@@ -126,42 +174,10 @@ function Stage({
 		}
 
 		return () => clearInterval(interval.current);
-	}, [isRunning, currentStage]);
-
-	const handleStageTransition = () => {
-		endStageSound.play();
-
-		let nextStage;
-
-		switch (currentStage) {
-			case 'Focus':
-				setPomodoros(pomodoros + 1);
-				nextStage =
-					pomodoros % pomodorosUntilLongBreak === 0
-						? 'Long break'
-						: 'Break';
-				break;
-			case 'Break':
-				nextStage = 'Focus';
-				break;
-			case 'Long break':
-				nextStage = 'Focus';
-				break;
-			default:
-				//console.error("Unknown stage:", currentStage);
-				return;
-		}
-
-		// Clean up current timer state before transitioning
-		setIsRunning(false);
-		clearInterval(interval.current);
-		endTimeRef.current = null;
-		pauseTimeRef.current = null;
-
-		setCurrentStage(nextStage);
-	};
+	}, [isRunning, currentStage, currentTime, handleStageTransition]);
 
 	const handlePause = () => {
+		const clickButtonSound = new Audio(clickButton);
 		clickButtonSound.play();
 
 		if (isRunning) {
