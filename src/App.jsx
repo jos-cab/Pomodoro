@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Stage from './components/Stage';
 import Settings from './components/Settings';
 import settingsIcon from './public/settings.svg';

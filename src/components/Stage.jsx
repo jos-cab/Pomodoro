@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import endStageSoundSource from '../public/end-stage.mp3';
 import clickButton from '../public/interface-button.mp3';
 import './Stage.css';
@@ -134,10 +135,9 @@ function Stage({
 
 		switch (currentStage) {
 			case 'Focus':
-				const newPomodoros = pomodoros + 1;
-				setPomodoros(newPomodoros);
+				setPomodoros(pomodoros + 1);
 				nextStage =
-					newPomodoros % pomodorosUntilLongBreak === 0
+					pomodoros % pomodorosUntilLongBreak === 0
 						? 'Long break'
 						: 'Break';
 				break;
@@ -190,5 +190,16 @@ function Stage({
 		</>
 	);
 }
+
+Stage.propTypes = {
+	getStageTime: PropTypes.func.isRequired,
+	currentStage: PropTypes.string.isRequired,
+	setCurrentStage: PropTypes.func.isRequired,
+	pomodoros: PropTypes.number.isRequired,
+	setPomodoros: PropTypes.func.isRequired,
+	autoStartFocus: PropTypes.bool.isRequired,
+	autoStartBreaks: PropTypes.bool.isRequired,
+	pomodorosUntilLongBreak: PropTypes.number.isRequired,
+};
 
 export default Stage;

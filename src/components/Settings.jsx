@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import './Settings.css';
 
 function Settings({
@@ -272,5 +273,23 @@ function Settings({
 		</>
 	);
 }
+
+Settings.propTypes = {
+	setFocusTimeHours: PropTypes.func.isRequired,
+	setFocusTimeMinutes: PropTypes.func.isRequired,
+	setFocusTimeSeconds: PropTypes.func.isRequired,
+	setBreakTimeHours: PropTypes.func.isRequired,
+	setBreakTimeMinutes: PropTypes.func.isRequired,
+	setBreakTimeSeconds: PropTypes.func.isRequired,
+	setLongBreakTimeHours: PropTypes.func.isRequired,
+	setLongBreakTimeMinutes: PropTypes.func.isRequired,
+	setLongBreakTimeSeconds: PropTypes.func.isRequired,
+	setAutoStartFocus: PropTypes.func.isRequired,
+	setAutoStartBreaks: PropTypes.func.isRequired,
+	setPomodorosUntilLongBreak: PropTypes.func.isRequired,
+	currentStage: PropTypes.string.isRequired,
+	setShowSettings: PropTypes.func.isRequired,
+	updateStage: PropTypes.func.isRequired,
+};
 
 export default Settings;
