@@ -14,6 +14,7 @@ dist-ssr
 
 # Electron build artifacts
 release/
+build/icons/*.png
 
 # Editor directories and files
 .vscode/*

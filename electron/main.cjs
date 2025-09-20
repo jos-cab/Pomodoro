@@ -28,7 +28,7 @@ function createWindow() {
 			allowRunningInsecureContent: false,
 			experimentalFeatures: false,
 		},
-		icon: path.join(__dirname, '../icon.svg'), // Use root icon for faster access
+		icon: path.join(__dirname, '../build/icons/icon.png'), // Use generated PNG icon
 		titleBarStyle: 'default',
 		show: true, // Show immediately for faster perceived startup
 		center: true,
