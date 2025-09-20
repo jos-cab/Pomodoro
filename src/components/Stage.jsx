@@ -2,6 +2,11 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import endStageSoundSource from '../public/end-stage.mp3';
 import clickButton from '../public/interface-button.mp3';
+import {
+	showNotification,
+	setWindowTitle,
+	setAlwaysOnTop,
+} from '../utils/electron.js';
 import './Stage.css';
 
 const Root = document.getElementById('root');
@@ -69,7 +74,27 @@ function Stage({
 				.replace(')', ', 0.8)');
 			StartBtn.current.style.color = rgbaColor;
 		}
-	}, [currentTime, currentStage, getStageTime, interpolateColor]);
+
+		// Update window title with current timer
+		const title = isRunning
+			? `${displayTime} - ${currentStage} - Pomodoro Timer`
+			: `${currentStage} - Pomodoro Timer`;
+		setWindowTitle(title);
+
+		// Set always on top during focus sessions
+		if (currentStage === 'Focus' && isRunning) {
+			setAlwaysOnTop(true);
+		} else {
+			setAlwaysOnTop(false);
+		}
+	}, [
+		currentTime,
+		currentStage,
+		getStageTime,
+		interpolateColor,
+		displayTime,
+		isRunning,
+	]);
 
 	Root.style.backgroundColor = interpolateColor(
 		currentTime / getStageTime(currentStage)
@@ -101,11 +126,12 @@ function Stage({
 		autoStartBreaks,
 	]);
 
-	const handleStageTransition = useCallback(() => {
+	const handleStageTransition = useCallback(async () => {
 		const endStageSound = new Audio(endStageSoundSource);
 		endStageSound.play();
 
 		let nextStage;
+		let notificationMessage;
 
 		switch (currentStage) {
 			case 'Focus':
@@ -114,17 +140,25 @@ function Stage({
 					pomodoros % pomodorosUntilLongBreak === 0
 						? 'Long break'
 						: 'Break';
+				notificationMessage = `Focus session complete! Time for a ${nextStage.toLowerCase()}.`;
 				break;
 			case 'Break':
 				nextStage = 'Focus';
+				notificationMessage =
+					'Break time is over! Ready to focus again?';
 				break;
 			case 'Long break':
 				nextStage = 'Focus';
+				notificationMessage =
+					'Long break finished! Time to get back to work.';
 				break;
 			default:
 				console.error('Unknown stage:', currentStage);
 				return;
 		}
+
+		// Show desktop notification
+		await showNotification('Pomodoro Timer', notificationMessage);
 
 		// Clean up current timer state before transitioning
 		setIsRunning(false);

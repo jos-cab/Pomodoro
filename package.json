@@ -6,9 +6,15 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"predeploy": "npm run build",
+		"predeploy": "npm run build:web",
 		"deploy": "gh-pages -d dist",
-		"build": "vite build",
+		"build": "BUILD_TARGET=electron vite build",
+		"build:web": "vite build",
+		"build:electron": "BUILD_TARGET=electron vite build && electron-builder",
+		"dev:electron": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && NODE_ENV=development electron electron/main.cjs\"",
+		"start:electron": "npm run build && electron electron/main.cjs",
+		"dist": "npm run build && electron-builder --publish=never",
+		"dist:all": "npm run build && electron-builder --publish=never --win --mac --linux",
 		"lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview"
 	},
@@ -20,16 +26,104 @@
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
 		"@vitejs/plugin-react": "^4.3.1",
+		"concurrently": "^9.2.1",
+		"electron": "^38.1.2",
+		"electron-builder": "^26.0.12",
 		"eslint": "^8.57.0",
 		"eslint-plugin-react": "^7.34.3",
 		"eslint-plugin-react-hooks": "^4.6.2",
 		"eslint-plugin-react-refresh": "^0.4.7",
 		"gh-pages": "^6.1.1",
-		"vite": "^6.3.5"
+		"vite": "^6.3.5",
+		"wait-on": "^9.0.1"
 	},
 	"description": "This is a pomodoro timer made in react. Style was influenced by [pomofocus](https://pomofocus.io/).\r More features might be added in future versions.\r All times in settings must be in minutes.",
-	"main": "vite.config.js",
+	"main": "electron/main.cjs",
 	"keywords": [],
-	"author": "",
-	"license": "ISC"
+	"author": {
+		"name": "Pomodoro Timer",
+		"email": "pomodoro@example.com"
+	},
+	"license": "ISC",
+	"build": {
+		"appId": "com.pomodoro.timer",
+		"productName": "Pomodoro Timer",
+		"directories": {
+			"output": "release"
+		},
+		"files": [
+			"dist/**/*",
+			"electron/**/*",
+			"node_modules/**/*"
+		],
+		"mac": {
+			"category": "public.app-category.productivity",
+			"target": [
+				{
+					"target": "dmg",
+					"arch": [
+						"x64",
+						"arm64"
+					]
+				},
+				{
+					"target": "zip",
+					"arch": [
+						"x64",
+						"arm64"
+					]
+				}
+			],
+			"icon": "icon.svg"
+		},
+		"win": {
+			"target": [
+				{
+					"target": "nsis",
+					"arch": [
+						"x64",
+						"ia32"
+					]
+				},
+				{
+					"target": "portable",
+					"arch": [
+						"x64",
+						"ia32"
+					]
+				}
+			],
+			"icon": "icon.svg"
+		},
+		"linux": {
+			"target": [
+				{
+					"target": "AppImage",
+					"arch": [
+						"x64"
+					]
+				},
+				{
+					"target": "deb",
+					"arch": [
+						"x64"
+					]
+				},
+				{
+					"target": "rpm",
+					"arch": [
+						"x64"
+					]
+				}
+			],
+			"icon": "icon.svg",
+			"category": "Office"
+		},
+		"nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true,
+			"createDesktopShortcut": true,
+			"createStartMenuShortcut": true
+		}
+	}
 }
