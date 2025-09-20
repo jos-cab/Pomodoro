@@ -4,7 +4,7 @@ A productivity-focused Pomodoro timer built with React, available both as a web 
 
 ## 🌐 Web Version
 
-Check out the [Live Demo](https://jos-cabrera.github.io/Pomodoro/)
+Check out the [Live Demo](https://jos-cab.github.io/Pomodoro/)
 
 ## 🖥️ Desktop App
 
@@ -33,7 +33,7 @@ Cross-platform desktop application with enhanced features:
 ### Installation
 
 ```bash
-git clone https://github.com/jos-cabrera/Pomodoro.git
+git clone https://github.com/jos-cab/Pomodoro.git
 cd Pomodoro
 npm install
 ```
