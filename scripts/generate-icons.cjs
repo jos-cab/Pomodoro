@@ -39,6 +39,12 @@ async function generateIcons() {
 		await sharp(svgBuffer).resize(512, 512).png().toFile(appImageIconPath);
 
 		console.log('Generated appimage-icon.png (512x512)');
+
+		// Copy SVG to icons directory for electron-builder
+		const svgIconPath = path.join(iconsDir, 'icon.svg');
+		fs.copyFileSync(svgPath, svgIconPath);
+
+		console.log('Copied icon.svg to build directory');
 		console.log('✅ All icons generated successfully!');
 	} catch (error) {
 		console.error('❌ Error generating icons:', error);
