@@ -77,12 +77,15 @@ function Stage({
 		// Update background color
 		rootElement.style.backgroundColor = rgbColor;
 
-		// Update button color (synchronized with background)
+		// Update button color via CSS custom property (enables smooth transitions)
 		if (startButtonRef.current) {
 			const rgbaColor = rgbColor
 				.replace('rgb', 'rgba')
 				.replace(')', ', 0.8)');
-			startButtonRef.current.style.color = rgbaColor;
+			startButtonRef.current.style.setProperty(
+				'--button-color',
+				rgbaColor
+			);
 		}
 
 		// Update window title with current timer
@@ -141,7 +144,10 @@ function Stage({
 				const rgbaColor = initialColor
 					.replace('rgb', 'rgba')
 					.replace(')', ', 0.8)');
-				startButtonRef.current.style.color = rgbaColor;
+				startButtonRef.current.style.setProperty(
+					'--button-color',
+					rgbaColor
+				);
 			}
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
 		} else {
@@ -155,7 +161,10 @@ function Stage({
 				const rgbaColor = initialColor
 					.replace('rgb', 'rgba')
 					.replace(')', ', 0.8)');
-				startButtonRef.current.style.color = rgbaColor;
+				startButtonRef.current.style.setProperty(
+					'--button-color',
+					rgbaColor
+				);
 			}
 			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 		}
