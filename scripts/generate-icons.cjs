@@ -1,6 +1,7 @@
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const toIco = require('to-ico');
 
 // Create build/icons directory if it doesn't exist
 const iconsDir = path.join(__dirname, '../build/icons');
@@ -45,6 +46,24 @@ async function generateIcons() {
 		fs.copyFileSync(svgPath, svgIconPath);
 
 		console.log('Copied icon.svg to build directory');
+
+		// Create ICO file for Windows executable
+		const icoSizes = [16, 24, 32, 48, 64, 128, 256];
+		const pngBuffers = [];
+
+		for (const size of icoSizes) {
+			const pngBuffer = await sharp(svgBuffer)
+				.resize(size, size)
+				.png()
+				.toBuffer();
+			pngBuffers.push(pngBuffer);
+		}
+
+		const icoBuffer = await toIco(pngBuffers);
+		const icoPath = path.join(iconsDir, 'icon.ico');
+		fs.writeFileSync(icoPath, icoBuffer);
+
+		console.log('Generated icon.ico for Windows executable');
 		console.log('✅ All icons generated successfully!');
 	} catch (error) {
 		console.error('❌ Error generating icons:', error);
