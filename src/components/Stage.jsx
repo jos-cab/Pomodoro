@@ -69,25 +69,8 @@ function Stage({
 		[startColor, endColor]
 	);
 
-	// Update colors, window title, and window behavior when timer changes
+	// Update window title and window behavior when timer changes
 	useEffect(() => {
-		const progress = currentTime / getStageTime(currentStage);
-		const rgbColor = interpolateColor(progress);
-
-		// Update background color
-		rootElement.style.backgroundColor = rgbColor;
-
-		// Update button color via CSS custom property (enables smooth transitions)
-		if (startButtonRef.current) {
-			const rgbaColor = rgbColor
-				.replace('rgb', 'rgba')
-				.replace(')', ', 0.8)');
-			startButtonRef.current.style.setProperty(
-				'--button-color',
-				rgbaColor
-			);
-		}
-
 		// Update window title with current timer
 		const title = isRunning
 			? `${displayTime} - ${currentStage} - Pomodoro Timer`
@@ -100,14 +83,29 @@ function Stage({
 		} else {
 			setAlwaysOnTop(false);
 		}
-	}, [
-		currentTime,
-		currentStage,
-		getStageTime,
-		interpolateColor,
-		displayTime,
-		isRunning,
-	]);
+	}, [displayTime, currentStage, isRunning]);
+
+	// Update colors smoothly when timer progresses
+	useEffect(() => {
+		const progress = currentTime / getStageTime(currentStage);
+		const rgbColor = interpolateColor(progress);
+
+		// Use requestAnimationFrame to ensure smooth updates
+		requestAnimationFrame(() => {
+			// Update both background and button colors using CSS custom properties
+			rootElement.style.setProperty('--bg-color', rgbColor);
+
+			if (startButtonRef.current) {
+				const rgbaColor = rgbColor
+					.replace('rgb', 'rgba')
+					.replace(')', ', 0.8)');
+				startButtonRef.current.style.setProperty(
+					'--button-color',
+					rgbaColor
+				);
+			}
+		});
+	}, [currentTime, currentStage, getStageTime, interpolateColor]);
 
 	useEffect(() => {
 		// Reset all timer state when stage changes
@@ -139,7 +137,7 @@ function Stage({
 			setEndColor(breakColor);
 			// Set initial colors immediately to prevent flash
 			const initialColor = calculateColor(focusColor, breakColor, 1);
-			rootElement.style.backgroundColor = initialColor;
+			rootElement.style.setProperty('--bg-color', initialColor);
 			if (startButtonRef.current) {
 				const rgbaColor = initialColor
 					.replace('rgb', 'rgba')
@@ -156,7 +154,7 @@ function Stage({
 			setEndColor(focusColor);
 			// Set initial colors immediately to prevent flash
 			const initialColor = calculateColor(breakColor, focusColor, 1);
-			rootElement.style.backgroundColor = initialColor;
+			rootElement.style.setProperty('--bg-color', initialColor);
 			if (startButtonRef.current) {
 				const rgbaColor = initialColor
 					.replace('rgb', 'rgba')

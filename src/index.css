@@ -26,6 +26,8 @@
 	-webkit-box-align: center;
 	-ms-flex-align: center;
 	align-items: center;
-	/* Smooth background color transitions */
-	transition: background-color 0.3s ease-in-out;
+	/* Use CSS custom property for background color */
+	background-color: var(--bg-color, rgb(225, 75, 75));
+	/* Add smooth transition for background color changes */
+	transition: background-color 0.1s ease-out;
 }
