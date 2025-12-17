@@ -1,78 +1,33 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import PropTypes from 'prop-types';
+import { TIMER_CONSTANTS } from '../constants/timer';
 import './Settings.css';
 
 function Settings({
-	setFocusTimeHours,
-	setFocusTimeMinutes,
-	setFocusTimeSeconds,
-	setBreakTimeHours,
-	setBreakTimeMinutes,
-	setBreakTimeSeconds,
-	setLongBreakTimeHours,
-	setLongBreakTimeMinutes,
-	setLongBreakTimeSeconds,
-	setAutoStartFocus,
-	setAutoStartBreaks,
-	setPomodorosUntilLongBreak,
+	timerConfig,
+	configSetters,
 	currentStage,
 	setShowSettings,
 	updateStage,
 }) {
 	const initialFormData = {
-		focusTimeHours:
-			localStorage.getItem('focusTimeHours') !== null
-				? Number(localStorage.getItem('focusTimeHours'))
-				: 0,
-		focusTimeMinutes:
-			localStorage.getItem('focusTimeMinutes') !== null
-				? Number(localStorage.getItem('focusTimeMinutes'))
-				: 25,
-		focusTimeSeconds:
-			localStorage.getItem('focusTimeSeconds') !== null
-				? Number(localStorage.getItem('focusTimeSeconds'))
-				: 0,
-		breakTimeHours:
-			localStorage.getItem('breakTimeHours') !== null
-				? Number(localStorage.getItem('breakTimeHours'))
-				: 0,
-		breakTimeMinutes:
-			localStorage.getItem('breakTimeMinutes') !== null
-				? Number(localStorage.getItem('breakTimeMinutes'))
-				: 5,
-		breakTimeSeconds:
-			localStorage.getItem('breakTimeSeconds') !== null
-				? Number(localStorage.getItem('breakTimeSeconds'))
-				: 0,
-		longBreakTimeHours:
-			localStorage.getItem('longBreakTimeHours') !== null
-				? Number(localStorage.getItem('longBreakTimeHours'))
-				: 0,
-		longBreakTimeMinutes:
-			localStorage.getItem('longBreakTimeMinutes') !== null
-				? Number(localStorage.getItem('longBreakTimeMinutes'))
-				: 10,
-		longBreakTimeSeconds:
-			localStorage.getItem('longBreakTimeSeconds') !== null
-				? Number(localStorage.getItem('longBreakTimeSeconds'))
-				: 0,
-		autoStartFocus:
-			localStorage.getItem('autoStartFocus') !== null
-				? localStorage.getItem('autoStartFocus') === 'true'
-				: false,
-		autoStartBreaks:
-			localStorage.getItem('autoStartBreaks') !== null
-				? localStorage.getItem('autoStartBreaks') === 'true'
-				: false,
-		pomodorosUntilLongBreak:
-			localStorage.getItem('pomodorosUntilLongBreak') !== null
-				? Number(localStorage.getItem('pomodorosUntilLongBreak'))
-				: 3,
+		focusTimeHours: timerConfig.focus.hours,
+		focusTimeMinutes: timerConfig.focus.minutes,
+		focusTimeSeconds: timerConfig.focus.seconds,
+		breakTimeHours: timerConfig.break.hours,
+		breakTimeMinutes: timerConfig.break.minutes,
+		breakTimeSeconds: timerConfig.break.seconds,
+		longBreakTimeHours: timerConfig.longBreak.hours,
+		longBreakTimeMinutes: timerConfig.longBreak.minutes,
+		longBreakTimeSeconds: timerConfig.longBreak.seconds,
+		autoStartFocus: timerConfig.autoStart.focus,
+		autoStartBreaks: timerConfig.autoStart.breaks,
+		pomodorosUntilLongBreak: timerConfig.pomodorosUntilLongBreak,
 	};
 
 	const [formData, setFormData] = useState(initialFormData);
 
-	const handleChange = (event) => {
+	const handleInputChange = (event) => {
 		const { name, type, checked } = event.target;
 		const value =
 			type === 'checkbox' ? checked : Number(event.target.value);
@@ -82,73 +37,94 @@ function Settings({
 			[name]: value,
 		}));
 
+		// Save to localStorage using constants
+		const storageKey =
+			TIMER_CONSTANTS.STORAGE_KEYS[
+				name.toUpperCase().replace(/([A-Z])/g, '_$1')
+			] || name;
 		localStorage.setItem(
-			name,
-			type === 'checkbox' ? value : value.toString()
+			storageKey,
+			type === 'checkbox' ? value.toString() : value.toString()
 		);
 	};
 
-	const handleClick = (event) => {
+	const validateFormData = (data) => {
+		const {
+			MAX_HOURS,
+			MAX_MINUTES,
+			MAX_SECONDS,
+			MIN_TIME_SECONDS,
+			VALIDATION,
+		} = TIMER_CONSTANTS;
+
+		// Validate time ranges
+		const timeFields = [
+			{ prefix: 'focusTime', name: 'Focus time' },
+			{ prefix: 'breakTime', name: 'Break time' },
+			{ prefix: 'longBreakTime', name: 'Long break time' },
+		];
+
+		for (const field of timeFields) {
+			const hours = data[`${field.prefix}Hours`];
+			const minutes = data[`${field.prefix}Minutes`];
+			const seconds = data[`${field.prefix}Seconds`];
+
+			if (
+				hours < 0 ||
+				hours > MAX_HOURS ||
+				minutes < 0 ||
+				minutes > MAX_MINUTES ||
+				seconds < 0 ||
+				seconds > MAX_SECONDS
+			) {
+				return `${field.name} values are out of range`;
+			}
+
+			const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+			if (totalSeconds < MIN_TIME_SECONDS) {
+				return `${field.name} must be at least 1 second`;
+			}
+		}
+
+		// Validate pomodoros until long break
+		if (
+			data.pomodorosUntilLongBreak <
+				VALIDATION.MIN_POMODOROS_UNTIL_LONG_BREAK ||
+			data.pomodorosUntilLongBreak >
+				VALIDATION.MAX_POMODOROS_UNTIL_LONG_BREAK
+		) {
+			return 'Pomodoros until long break must be between 1 and 99';
+		}
+
+		return null;
+	};
+
+	const handleSaveSettings = (event) => {
 		event.preventDefault();
 
-		if (
-			formData.focusTimeHours < 0 ||
-			formData.focusTimeHours > 24 ||
-			formData.focusTimeMinutes < 0 ||
-			formData.focusTimeMinutes > 59 ||
-			formData.focusTimeSeconds < 0 ||
-			formData.focusTimeSeconds > 59 ||
-			formData.breakTimeHours < 0 ||
-			formData.breakTimeHours > 24 ||
-			formData.breakTimeMinutes < 0 ||
-			formData.breakTimeMinutes > 59 ||
-			formData.breakTimeSeconds < 0 ||
-			formData.breakTimeSeconds > 59 ||
-			formData.longBreakTimeHours < 0 ||
-			formData.longBreakTimeHours > 24 ||
-			formData.longBreakTimeMinutes < 0 ||
-			formData.longBreakTimeMinutes > 59 ||
-			formData.longBreakTimeSeconds < 0 ||
-			formData.longBreakTimeSeconds > 59 ||
-			formData.focusTimeHours * 3600 +
-				formData.focusTimeMinutes * 60 +
-				formData.focusTimeSeconds <
-				1 ||
-			formData.breakTimeHours * 3600 +
-				formData.breakTimeMinutes * 60 +
-				formData.breakTimeSeconds <
-				1 ||
-			formData.longBreakTimeHours * 3600 +
-				formData.longBreakTimeMinutes * 60 +
-				formData.longBreakTimeSeconds <
-				1 ||
-			formData.pomodorosUntilLongBreak < 1 ||
-			formData.pomodorosUntilLongBreak > 99
-		)
+		const validationError = validateFormData(formData);
+		if (validationError) {
+			alert(validationError);
 			return;
+		}
 
-		setFocusTimeHours(formData.focusTimeHours);
-		setFocusTimeMinutes(formData.focusTimeMinutes);
-		setFocusTimeSeconds(formData.focusTimeSeconds);
-		setBreakTimeHours(formData.breakTimeHours);
-		setBreakTimeMinutes(formData.breakTimeMinutes);
-		setBreakTimeSeconds(formData.breakTimeSeconds);
-		setLongBreakTimeHours(formData.longBreakTimeHours);
-		setLongBreakTimeMinutes(formData.longBreakTimeMinutes);
-		setLongBreakTimeSeconds(formData.longBreakTimeSeconds);
-
-		setAutoStartFocus(formData.autoStartFocus);
-		setAutoStartBreaks(formData.autoStartBreaks);
-
-		setPomodorosUntilLongBreak(formData.pomodorosUntilLongBreak);
+		// Update all settings using the configSetters
+		configSetters.setFocusTimeHours(formData.focusTimeHours);
+		configSetters.setFocusTimeMinutes(formData.focusTimeMinutes);
+		configSetters.setFocusTimeSeconds(formData.focusTimeSeconds);
+		configSetters.setBreakTimeHours(formData.breakTimeHours);
+		configSetters.setBreakTimeMinutes(formData.breakTimeMinutes);
+		configSetters.setBreakTimeSeconds(formData.breakTimeSeconds);
+		configSetters.setLongBreakTimeHours(formData.longBreakTimeHours);
+		configSetters.setLongBreakTimeMinutes(formData.longBreakTimeMinutes);
+		configSetters.setLongBreakTimeSeconds(formData.longBreakTimeSeconds);
+		configSetters.setAutoStartFocus(formData.autoStartFocus);
+		configSetters.setAutoStartBreaks(formData.autoStartBreaks);
+		configSetters.setPomodorosUntilLongBreak(
+			formData.pomodorosUntilLongBreak
+		);
 
 		updateStage(currentStage);
-
-		// Save to localStorage
-		// Object.keys(formData).forEach((key) => {
-		// 	localStorage.setItem(key, formData[key].toString());
-		// });
-
 		setShowSettings(false);
 	};
 
@@ -189,30 +165,30 @@ function Settings({
 				</label>
 				<input
 					min={0}
-					max={24}
+					max={TIMER_CONSTANTS.MAX_HOURS}
 					type='number'
 					name={field + 'Hours'}
 					id={field + 'Hours'}
 					value={formData[field + 'Hours']}
-					onChange={handleChange}
+					onChange={handleInputChange}
 				/>
 				<input
 					min={0}
-					max={59}
+					max={TIMER_CONSTANTS.MAX_MINUTES}
 					type='number'
 					name={field + 'Minutes'}
 					id={field + 'Minutes'}
 					value={formData[field + 'Minutes']}
-					onChange={handleChange}
+					onChange={handleInputChange}
 				/>
 				<input
 					min={0}
-					max={59}
+					max={TIMER_CONSTANTS.MAX_SECONDS}
 					type='number'
 					name={field + 'Seconds'}
 					id={field + 'Seconds'}
 					value={formData[field + 'Seconds']}
-					onChange={handleChange}
+					onChange={handleInputChange}
 				/>
 			</div>
 		) : (
@@ -223,13 +199,19 @@ function Settings({
 					{transformCamelCase(field)}
 				</label>
 				<input
-					min={1}
-					max={99}
+					min={
+						TIMER_CONSTANTS.VALIDATION
+							.MIN_POMODOROS_UNTIL_LONG_BREAK
+					}
+					max={
+						TIMER_CONSTANTS.VALIDATION
+							.MAX_POMODOROS_UNTIL_LONG_BREAK
+					}
 					type='number'
 					name={field}
 					id={field}
 					value={formData[field]}
-					onChange={handleChange}
+					onChange={handleInputChange}
 				/>
 			</div>
 		)
@@ -243,11 +225,11 @@ function Settings({
 				name={field}
 				id={field}
 				checked={formData[field]}
-				onChange={handleChange}
+				onChange={handleInputChange}
 			/>
 			<span
 				onClick={() =>
-					handleChange({
+					handleInputChange({
 						target: {
 							name: field,
 							type: 'checkbox',
@@ -266,7 +248,7 @@ function Settings({
 				<h2 className='title settings-title'>Settings</h2>
 				{numericSettingFieldsComponents}
 				{checkSettingFieldsComponents}
-				<button className='save-settings' onClick={handleClick}>
+				<button className='save-settings' onClick={handleSaveSettings}>
 					Save Settings
 				</button>
 			</form>
@@ -275,21 +257,35 @@ function Settings({
 }
 
 Settings.propTypes = {
-	setFocusTimeHours: PropTypes.func.isRequired,
-	setFocusTimeMinutes: PropTypes.func.isRequired,
-	setFocusTimeSeconds: PropTypes.func.isRequired,
-	setBreakTimeHours: PropTypes.func.isRequired,
-	setBreakTimeMinutes: PropTypes.func.isRequired,
-	setBreakTimeSeconds: PropTypes.func.isRequired,
-	setLongBreakTimeHours: PropTypes.func.isRequired,
-	setLongBreakTimeMinutes: PropTypes.func.isRequired,
-	setLongBreakTimeSeconds: PropTypes.func.isRequired,
-	setAutoStartFocus: PropTypes.func.isRequired,
-	setAutoStartBreaks: PropTypes.func.isRequired,
-	setPomodorosUntilLongBreak: PropTypes.func.isRequired,
+	timerConfig: PropTypes.shape({
+		focus: PropTypes.shape({
+			hours: PropTypes.number.isRequired,
+			minutes: PropTypes.number.isRequired,
+			seconds: PropTypes.number.isRequired,
+			total: PropTypes.number.isRequired,
+		}).isRequired,
+		break: PropTypes.shape({
+			hours: PropTypes.number.isRequired,
+			minutes: PropTypes.number.isRequired,
+			seconds: PropTypes.number.isRequired,
+			total: PropTypes.number.isRequired,
+		}).isRequired,
+		longBreak: PropTypes.shape({
+			hours: PropTypes.number.isRequired,
+			minutes: PropTypes.number.isRequired,
+			seconds: PropTypes.number.isRequired,
+			total: PropTypes.number.isRequired,
+		}).isRequired,
+		autoStart: PropTypes.shape({
+			focus: PropTypes.bool.isRequired,
+			breaks: PropTypes.bool.isRequired,
+		}).isRequired,
+		pomodorosUntilLongBreak: PropTypes.number.isRequired,
+	}).isRequired,
+	configSetters: PropTypes.object.isRequired,
 	currentStage: PropTypes.string.isRequired,
 	setShowSettings: PropTypes.func.isRequired,
 	updateStage: PropTypes.func.isRequired,
 };
 
-export default Settings;
+export default memo(Settings);

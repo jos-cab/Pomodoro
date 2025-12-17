@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
-import endStageSoundSource from '../public/end-stage.mp3';
-import clickButton from '../public/interface-button.mp3';
+import endStageSoundSource from '../assets/sounds/end-stage.mp3';
+import clickButton from '../assets/sounds/interface-button.mp3';
+import { TIMER_CONSTANTS, timeHelpers } from '../constants/timer';
 import {
 	showNotification,
 	setWindowTitle,
@@ -9,7 +10,7 @@ import {
 } from '../utils/electron.js';
 import './Stage.css';
 
-const Root = document.getElementById('root');
+const rootElement = document.getElementById('root');
 
 function Stage({
 	getStageTime,
@@ -27,24 +28,17 @@ function Stage({
 	const endTimeRef = useRef(null);
 	const pauseTimeRef = useRef(null);
 
-	const StartBtn = useRef(null);
+	const startButtonRef = useRef(null);
 
-	let displayHours = Math.floor(currentTime / 3600);
-	let displayMinutes = Math.floor(currentTime / 60) % 60;
-	let displaySeconds = currentTime % 60;
+	const displayTime = useMemo(() => {
+		return timeHelpers.toDisplayTime(currentTime).formatted;
+	}, [currentTime]);
 
-	if (displayHours < 10) displayHours = '0' + displayHours;
-	if (displayMinutes < 10) displayMinutes = '0' + displayMinutes;
-	if (displaySeconds < 10) displaySeconds = '0' + displaySeconds;
+	const focusColor = useMemo(() => TIMER_CONSTANTS.FOCUS_COLOR, []);
+	const breakColor = useMemo(() => TIMER_CONSTANTS.BREAK_COLOR, []);
 
-	const displayTime =
-		displayHours + ':' + displayMinutes + ':' + displaySeconds;
-
-	const color_1 = useMemo(() => ({ r: 225, g: 75, b: 75 }), []); // red
-	const color_2 = useMemo(() => ({ r: 50, g: 150, b: 200 }), []); // blue
-
-	const [startColor, setStartColor] = useState(color_1);
-	const [endColor, setEndColor] = useState(color_2);
+	const [startColor, setStartColor] = useState(focusColor);
+	const [endColor, setEndColor] = useState(breakColor);
 
 	const interpolateColor = useCallback(
 		(progress) => {
@@ -65,14 +59,14 @@ function Stage({
 	);
 
 	useEffect(() => {
-		if (StartBtn.current) {
+		if (startButtonRef.current) {
 			const rgbColor = interpolateColor(
 				currentTime / getStageTime(currentStage)
 			);
 			const rgbaColor = rgbColor
 				.replace('rgb', 'rgba')
 				.replace(')', ', 0.8)');
-			StartBtn.current.style.color = rgbaColor;
+			startButtonRef.current.style.color = rgbaColor;
 		}
 
 		// Update window title with current timer
@@ -82,7 +76,7 @@ function Stage({
 		setWindowTitle(title);
 
 		// Set always on top during focus sessions
-		if (currentStage === 'Focus' && isRunning) {
+		if (currentStage === TIMER_CONSTANTS.STAGES.FOCUS && isRunning) {
 			setAlwaysOnTop(true);
 		} else {
 			setAlwaysOnTop(false);
@@ -96,7 +90,7 @@ function Stage({
 		isRunning,
 	]);
 
-	Root.style.backgroundColor = interpolateColor(
+	rootElement.style.backgroundColor = interpolateColor(
 		currentTime / getStageTime(currentStage)
 	);
 
@@ -108,20 +102,20 @@ function Stage({
 		pauseTimeRef.current = null;
 		setCurrentTime(getStageTime(currentStage));
 
-		if (currentStage === 'Focus') {
-			setStartColor(color_1);
-			setEndColor(color_2);
+		if (currentStage === TIMER_CONSTANTS.STAGES.FOCUS) {
+			setStartColor(focusColor);
+			setEndColor(breakColor);
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
 		} else {
-			setStartColor(color_2);
-			setEndColor(color_1);
+			setStartColor(breakColor);
+			setEndColor(focusColor);
 			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 		}
 	}, [
 		currentStage,
 		getStageTime,
-		color_1,
-		color_2,
+		focusColor,
+		breakColor,
 		autoStartFocus,
 		autoStartBreaks,
 	]);
@@ -134,21 +128,21 @@ function Stage({
 		let notificationMessage;
 
 		switch (currentStage) {
-			case 'Focus':
+			case TIMER_CONSTANTS.STAGES.FOCUS:
 				setPomodoros(pomodoros + 1);
 				nextStage =
 					pomodoros % pomodorosUntilLongBreak === 0
-						? 'Long break'
-						: 'Break';
+						? TIMER_CONSTANTS.STAGES.LONG_BREAK
+						: TIMER_CONSTANTS.STAGES.BREAK;
 				notificationMessage = `Focus session complete! Time for a ${nextStage.toLowerCase()}.`;
 				break;
-			case 'Break':
-				nextStage = 'Focus';
+			case TIMER_CONSTANTS.STAGES.BREAK:
+				nextStage = TIMER_CONSTANTS.STAGES.FOCUS;
 				notificationMessage =
 					'Break time is over! Ready to focus again?';
 				break;
-			case 'Long break':
-				nextStage = 'Focus';
+			case TIMER_CONSTANTS.STAGES.LONG_BREAK:
+				nextStage = TIMER_CONSTANTS.STAGES.FOCUS;
 				notificationMessage =
 					'Long break finished! Time to get back to work.';
 				break;
@@ -202,7 +196,7 @@ function Stage({
 					setIsRunning(false);
 					handleStageTransition();
 				}
-			}, 1000);
+			}, TIMER_CONSTANTS.TIMER_INTERVAL_MS);
 		} else {
 			clearInterval(interval.current);
 		}
@@ -234,7 +228,12 @@ function Stage({
 	return (
 		<>
 			<h1 className='timer'>{displayTime}</h1>
-			<button className='start-btn' ref={StartBtn} onClick={handlePause}>
+			<button
+				className='timer-control-button'
+				ref={startButtonRef}
+				onClick={handlePause}
+				aria-label={isRunning ? 'Pause timer' : 'Start timer'}
+				aria-pressed={isRunning}>
 				{isRunning ? 'Stop' : 'Start'}
 			</button>
 		</>
@@ -252,4 +251,4 @@ Stage.propTypes = {
 	pomodorosUntilLongBreak: PropTypes.number.isRequired,
 };
 
-export default Stage;
+export default memo(Stage);
