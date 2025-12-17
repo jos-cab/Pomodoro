@@ -37,20 +37,31 @@ function Stage({
 	const focusColor = useMemo(() => TIMER_CONSTANTS.FOCUS_COLOR, []);
 	const breakColor = useMemo(() => TIMER_CONSTANTS.BREAK_COLOR, []);
 
-	const [startColor, setStartColor] = useState(focusColor);
-	const [endColor, setEndColor] = useState(breakColor);
+	// Initialize colors based on current stage to prevent flash
+	const [startColor, setStartColor] = useState(() =>
+		currentStage === TIMER_CONSTANTS.STAGES.FOCUS ? focusColor : breakColor
+	);
+	const [endColor, setEndColor] = useState(() =>
+		currentStage === TIMER_CONSTANTS.STAGES.FOCUS ? breakColor : focusColor
+	);
 
 	const interpolateColor = useCallback(
 		(progress) => {
+			// Clamp progress between 0 and 1 to prevent invalid colors
+			const clampedProgress = Math.max(0, Math.min(1, progress));
+
 			// Calculate the interpolated color values
 			const r = Math.floor(
-				startColor.r + (1 - progress) * (endColor.r - startColor.r)
+				startColor.r +
+					(1 - clampedProgress) * (endColor.r - startColor.r)
 			);
 			const g = Math.floor(
-				startColor.g + (1 - progress) * (endColor.g - startColor.g)
+				startColor.g +
+					(1 - clampedProgress) * (endColor.g - startColor.g)
 			);
 			const b = Math.floor(
-				startColor.b + (1 - progress) * (endColor.b - startColor.b)
+				startColor.b +
+					(1 - clampedProgress) * (endColor.b - startColor.b)
 			);
 
 			return `rgb(${r}, ${g}, ${b})`;
@@ -90,9 +101,11 @@ function Stage({
 		isRunning,
 	]);
 
-	rootElement.style.backgroundColor = interpolateColor(
-		currentTime / getStageTime(currentStage)
-	);
+	// Update background color when timer changes
+	useEffect(() => {
+		const progress = currentTime / getStageTime(currentStage);
+		rootElement.style.backgroundColor = interpolateColor(progress);
+	}, [currentTime, currentStage, getStageTime, interpolateColor]);
 
 	useEffect(() => {
 		// Reset all timer state when stage changes
@@ -100,15 +113,22 @@ function Stage({
 		clearInterval(interval.current);
 		endTimeRef.current = null;
 		pauseTimeRef.current = null;
-		setCurrentTime(getStageTime(currentStage));
+
+		const stageTime = getStageTime(currentStage);
+		setCurrentTime(stageTime);
 
 		if (currentStage === TIMER_CONSTANTS.STAGES.FOCUS) {
 			setStartColor(focusColor);
 			setEndColor(breakColor);
+			// Set initial background color immediately to prevent flash
+			rootElement.style.backgroundColor = interpolateColor(1); // Full time = focus color
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
 		} else {
+			// Both Break and Long Break use the same color scheme
 			setStartColor(breakColor);
 			setEndColor(focusColor);
+			// Set initial background color immediately to prevent flash
+			rootElement.style.backgroundColor = interpolateColor(1); // Full time = break color
 			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 		}
 	}, [
@@ -118,6 +138,7 @@ function Stage({
 		breakColor,
 		autoStartFocus,
 		autoStartBreaks,
+		interpolateColor,
 	]);
 
 	const handleStageTransition = useCallback(async () => {
