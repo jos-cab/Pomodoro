@@ -69,11 +69,16 @@ function Stage({
 		[startColor, endColor]
 	);
 
+	// Update colors, window title, and window behavior when timer changes
 	useEffect(() => {
+		const progress = currentTime / getStageTime(currentStage);
+		const rgbColor = interpolateColor(progress);
+
+		// Update background color
+		rootElement.style.backgroundColor = rgbColor;
+
+		// Update button color (synchronized with background)
 		if (startButtonRef.current) {
-			const rgbColor = interpolateColor(
-				currentTime / getStageTime(currentStage)
-			);
 			const rgbaColor = rgbColor
 				.replace('rgb', 'rgba')
 				.replace(')', ', 0.8)');
@@ -101,12 +106,6 @@ function Stage({
 		isRunning,
 	]);
 
-	// Update background color when timer changes
-	useEffect(() => {
-		const progress = currentTime / getStageTime(currentStage);
-		rootElement.style.backgroundColor = interpolateColor(progress);
-	}, [currentTime, currentStage, getStageTime, interpolateColor]);
-
 	useEffect(() => {
 		// Reset all timer state when stage changes
 		setIsRunning(false);
@@ -117,18 +116,47 @@ function Stage({
 		const stageTime = getStageTime(currentStage);
 		setCurrentTime(stageTime);
 
+		// Helper function to calculate color directly
+		const calculateColor = (start, end, progress = 1) => {
+			const clampedProgress = Math.max(0, Math.min(1, progress));
+			const r = Math.floor(
+				start.r + (1 - clampedProgress) * (end.r - start.r)
+			);
+			const g = Math.floor(
+				start.g + (1 - clampedProgress) * (end.g - start.g)
+			);
+			const b = Math.floor(
+				start.b + (1 - clampedProgress) * (end.b - start.b)
+			);
+			return `rgb(${r}, ${g}, ${b})`;
+		};
+
 		if (currentStage === TIMER_CONSTANTS.STAGES.FOCUS) {
 			setStartColor(focusColor);
 			setEndColor(breakColor);
-			// Set initial background color immediately to prevent flash
-			rootElement.style.backgroundColor = interpolateColor(1); // Full time = focus color
+			// Set initial colors immediately to prevent flash
+			const initialColor = calculateColor(focusColor, breakColor, 1);
+			rootElement.style.backgroundColor = initialColor;
+			if (startButtonRef.current) {
+				const rgbaColor = initialColor
+					.replace('rgb', 'rgba')
+					.replace(')', ', 0.8)');
+				startButtonRef.current.style.color = rgbaColor;
+			}
 			setTimeout(() => setIsRunning(autoStartFocus), 0);
 		} else {
 			// Both Break and Long Break use the same color scheme
 			setStartColor(breakColor);
 			setEndColor(focusColor);
-			// Set initial background color immediately to prevent flash
-			rootElement.style.backgroundColor = interpolateColor(1); // Full time = break color
+			// Set initial colors immediately to prevent flash
+			const initialColor = calculateColor(breakColor, focusColor, 1);
+			rootElement.style.backgroundColor = initialColor;
+			if (startButtonRef.current) {
+				const rgbaColor = initialColor
+					.replace('rgb', 'rgba')
+					.replace(')', ', 0.8)');
+				startButtonRef.current.style.color = rgbaColor;
+			}
 			setTimeout(() => setIsRunning(autoStartBreaks), 0);
 		}
 	}, [
