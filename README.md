@@ -118,6 +118,20 @@ Built files are located in the `release/` directory.
 
 Feel free to suggest any changes or improvements by opening an issue or pull request.
 
+## ⚠️ Development Notes
+
+### NPM Warnings
+
+During `npm install`, you may see deprecation warnings for packages like `rimraf`, `glob`, and `inflight`. These warnings come from deep dependencies of `electron-builder` and similar tools, not from our direct dependencies.
+
+**These warnings are safe to ignore** as they:
+
+-   Don't affect the functionality of the application
+-   Come from transitive dependencies we don't control directly
+-   Will be resolved when the maintainers of those packages update their dependencies
+
+All our direct dependencies are up-to-date and use modern, non-deprecated packages.
+
 ## 📄 License
 
 This project is licensed under the ISC License.
